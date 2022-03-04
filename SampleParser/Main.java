@@ -6,7 +6,7 @@
     javac Main.java
   
   To Run: 
-    java -classpath /usr/share/java/cup.jar:. Main gcd.tiny
+    java -classpath ../java-cup-11b.jar:. Main gcd.tiny
 
   where gcd.tiny is an test input file for the tiny language.
 */
