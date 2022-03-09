@@ -112,7 +112,7 @@ ID = [_a-zA-Z][_a-zA-Z0-9]*
 "=="               { return symbol(sym.EQ); }
 "!="               { return symbol(sym.NEQ); }
 "="                { return symbol(sym.ASSIGN); }
-";"                { return symbol(sym.SEMICOLON); }
+";"                { return symbol(sym.SEMI); }
 ","                { return symbol(sym.COMMA); }
 "("                { return symbol(sym.LPAREN); }
 ")"                { return symbol(sym.RPAREN); }
