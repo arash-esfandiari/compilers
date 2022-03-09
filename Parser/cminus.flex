@@ -95,33 +95,33 @@ ID = [_a-zA-Z][_a-zA-Z0-9]*
    code, that will be executed when the scanner matches the associated
    regular expression. */
    
-"else"             { return symbol(sym.ELSE); }
-"if"               { return symbol(sym.IF); }
-"int"              { return symbol(sym.INT); }
-"return"           { return symbol(sym.RETURN); }
-"void"             { return symbol(sym.VOID); }
-"while"            { return symbol(sym.WHILE); }
-"+"                { return symbol(sym.PLUS); }
-"-"                { return symbol(sym.MINUS); }
-"*"                { return symbol(sym.TIMES); }
-"/"                { return symbol(sym.OVER); }
-"<"                { return symbol(sym.LT); }
-"<="               { return symbol(sym.LTEQ); }
-">"                { return symbol(sym.GT); }
-">="               { return symbol(sym.GTEQ); }
-"=="               { return symbol(sym.EQ); }
-"!="               { return symbol(sym.NEQ); }
-"="                { return symbol(sym.ASSIGN); }
-";"                { return symbol(sym.SEMI); }
-","                { return symbol(sym.COMMA); }
-"("                { return symbol(sym.LPAREN); }
-")"                { return symbol(sym.RPAREN); }
-"["                { return symbol(sym.RBRACKET); }
-"]"                { return symbol(sym.RBRACKET); }
-"{"                { return symbol(sym.RBRACE); }
-"}"                { return symbol(sym.RBRACE); }
-{num}              { return symbol(sym.NUM, yytext()); }
-{ID}               { return symbol(sym.ID, yytext()); }
-{WhiteSpace}+      { /* skip whitespace */ }   
-"/*"[^\}]*"*/"     { /* skip comments */ }
-.                  { return symbol(sym.ERROR); }
+"else"                              { return symbol(sym.ELSE); }
+"if"                                { return symbol(sym.IF); }
+"int"                               { return symbol(sym.INT); }
+"return"                            { return symbol(sym.RETURN); }
+"void"                              { return symbol(sym.VOID); }
+"while"                             { return symbol(sym.WHILE); }
+"+"                                 { return symbol(sym.PLUS); }
+"-"                                 { return symbol(sym.MINUS); }
+"*"                                 { return symbol(sym.TIMES); }
+"/"                                 { return symbol(sym.OVER); }
+"<"                                 { return symbol(sym.LT); }
+"<="                                { return symbol(sym.LTEQ); }
+">"                                 { return symbol(sym.GT); }
+">="                                { return symbol(sym.GTEQ); }
+"=="                                { return symbol(sym.EQ); }
+"!="                                { return symbol(sym.NEQ); }
+"="                                 { return symbol(sym.ASSIGN); }
+";"                                 { return symbol(sym.SEMI); }
+","                                 { return symbol(sym.COMMA); }
+"("                                 { return symbol(sym.LPAREN); }
+")"                                 { return symbol(sym.RPAREN); }
+"["                                 { return symbol(sym.RBRACKET); }
+"]"                                 { return symbol(sym.RBRACKET); }
+"{"                                 { return symbol(sym.RBRACE); }
+"}"                                 { return symbol(sym.RBRACE); }
+{num}                               { return symbol(sym.NUM, yytext()); }
+{ID}                                { return symbol(sym.ID, yytext()); }
+{WhiteSpace}+                       { /* skip whitespace */ }   
+"/*"[^*]*[*]+([^*/][^*]*[*]+)*"/"   { /* skip comments */ }
+.                                   { return symbol(sym.ERROR); }
