@@ -85,54 +85,65 @@ non terminal Exp exp, simple_exp, term, factor;
 start with program;
 
 
-program	     ::= stmt_seq
-               ;
-
-stmt_seq     ::= stmt_seq SEMI stmt 
-               | stmt
-               | error SEMI stmt
-               ;
-
-stmt         ::= if_stmt
-               | repeat_stmt
-               | assign_stmt
-               | read_stmt
-               | write_stmt
-               ;
-
-if_stmt      ::= IF exp THEN stmt_seq END
-               | IF exp THEN stmt_seq ELSE stmt_seq END
-               ;
-
-repeat_stmt  ::= REPEAT stmt_seq UNTIL exp
-               ;
-
-assign_stmt  ::= ID ASSIGN exp
-               ;
-
-read_stmt    ::= READ ID
-               ;
-
-write_stmt   ::= WRITE exp
-               ;
-
-exp          ::= simple_exp LT simple_exp
-               | simple_exp GT simple_exp
-               | simple_exp EQ simple_exp
-               | simple_exp
-               ;
-
-simple_exp   ::= simple_exp PLUS term
-               | simple_exp MINUS term
-               | term
-               ;
-
-term         ::= term TIMES factor
-               | term OVER factor
-               | factor
-               ;
-
-factor       ::= LPAREN exp RPAREN
-               | NUM
-               | ID
-               ;
+program                 ::= declaration-list
+declaration-list        ::= declaration-list declaration 
+                          | declaration
+declaration             ::= var-declaration 
+                          | fun-declaration
+var-declaration         ::= type-specifier ID ; 
+                          | type-specifier ID [ NUM ] ;
+type-specifier          ::= int 
+                          | void
+fun-declaration         ::= type-specifier ID ( params ) compoundstmt
+params                  ::= param-list 
+                          | void
+param-list              ::= param-list , param 
+                          | param
+param                   ::= type-specifier ID 
+                          | type-specifier ID [ ]
+compound-stmt           ::= { local-declarations statement-list }
+local-declarations      ::= local-declarations var-declaration
+                          |
+statement-list          ::= statement-list statement 
+                          |
+statement               ::= expression-stmt 
+                          | compound-stmt
+                          | selection-stmt 
+                          | iteration-stmt
+                          | return-stmt
+expression-stmt         ::= expression ; 
+                          | ;
+selection-stmt          ::= if ( expression ) statement
+                          | if ( expression ) statement else statement
+iteration-stmt          ::= while ( expression ) statement
+return-stmt             ::= return expression ; 
+                          | return ;
+expression              ::= var = expression 
+                          | simple-expression
+var                     ::= ID 
+                          | ID [ expression ]
+simple-expression       ::= additive-expression relop additiveexpression 
+                          | additive-expression
+relop                   ::= <= 
+                          | <
+                          | >
+                          | >= 
+                          | == 
+                          | !=
+additive-expression     ::= additive-expression addop term 
+                          | term
+addop                   ::= + 
+                          | -
+term                    ::= term mulop factor 
+                          | factor
+mulop                   ::= * 
+                          | /
+factor                  ::= ( expression ) 
+                          | var 
+                          | call 
+                          | NUM
+call                    ::= ID ( args )
+args                    ::= arg-list 
+                          |
+arg-list                ::= arg-list , expression 
+                          | expression
