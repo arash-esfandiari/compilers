@@ -75,14 +75,14 @@ terminal ELSE, IF, INT, RETURN, VOID, WHILE;
 terminal PLUS, MINUS, TIMES, DIV, LT, LTEQ, GT, GTEQ, EQ, NEQ, ASSIGN, SEMI, COMMA, LPAREN, RPAREN, LBRACKET, RBRACKET, LBRACE, RBRACE;
 terminal ID, NUM;
 terminal ERROR;
-   
-   
-non terminal ExpList program, stmt_seq;
-non terminal Exp stmt, if_stmt, repeat_stmt, assign_stmt, read_stmt, write_stmt;
-non terminal Exp exp, simple_exp, term, factor;   
+
+
+non terminal program, declaration-list, declaration, var-declaration, type-specifier, fun-declaration;
+non terminal params, param-list, param, compound-stmt, statement-list, statement;    
+non terminal expression-stmt, selection-stmt, iteration-stmt, return-stmt, expression, var, simple-expression, relop, additive-expression, addop, term, mulop, factor, call, args, arg-list            
 
 /* ----------------------------Grammar Section-------------------- */
-   
+
 start with program;
 
 
