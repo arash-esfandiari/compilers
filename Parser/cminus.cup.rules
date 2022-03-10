@@ -72,7 +72,7 @@ parser code {:
 /* ------------Declaration of Terminals and Non Terminals Section----------- */
    
 terminal ELSE, IF, INT, RETURN, VOID, WHILE;
-terminal PLUS, MINUS, TIMES, OVER, LT, LTEQ, GT, GTEQ, EQ, NEQ, ASSIGN, SEMI, COMMA, LPAREN, RPAREN, LBRACKET, RBRACKET, LBRACE, RBRACE;
+terminal PLUS, MINUS, TIMES, DIV, LT, LTEQ, GT, GTEQ, EQ, NEQ, ASSIGN, SEMI, COMMA, LPAREN, RPAREN, LBRACKET, RBRACKET, LBRACE, RBRACE;
 terminal ID, NUM;
 terminal ERROR;
    
@@ -95,7 +95,7 @@ var-declaration         ::= type-specifier ID ;
                           | type-specifier ID [ NUM ] ;
 type-specifier          ::= int 
                           | void
-fun-declaration         ::= type-specifier ID ( params ) compoundstmt
+fun-declaration         ::= type-specifier ID ( params ) compound-stmt
 params                  ::= param-list 
                           | void
 param-list              ::= param-list , param 
@@ -123,7 +123,7 @@ expression              ::= var = expression
                           | simple-expression
 var                     ::= ID 
                           | ID [ expression ]
-simple-expression       ::= additive-expression relop additiveexpression 
+simple-expression       ::= additive-expression relop additive-expression 
                           | additive-expression
 relop                   ::= <= 
                           | <

@@ -104,7 +104,7 @@ ID = [_a-zA-Z][_a-zA-Z0-9]*
 "+"                                 { return symbol(sym.PLUS); }
 "-"                                 { return symbol(sym.MINUS); }
 "*"                                 { return symbol(sym.TIMES); }
-"/"                                 { return symbol(sym.OVER); }
+"/"                                 { return symbol(sym.DIV); }
 "<"                                 { return symbol(sym.LT); }
 "<="                                { return symbol(sym.LTEQ); }
 ">"                                 { return symbol(sym.GT); }
