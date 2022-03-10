@@ -116,9 +116,9 @@ ID = [_a-zA-Z][_a-zA-Z0-9]*
 ","                { return symbol(sym.COMMA); }
 "("                { return symbol(sym.LPAREN); }
 ")"                { return symbol(sym.RPAREN); }
-"["                { return symbol(sym.RBRACKET); }
+"["                { return symbol(sym.LBRACKET); }
 "]"                { return symbol(sym.RBRACKET); }
-"{"                { return symbol(sym.RBRACE); }
+"{"                { return symbol(sym.LBRACE); }
 "}"                { return symbol(sym.RBRACE); }
 {num}              { return symbol(sym.NUM, yytext()); }
 {ID}               { return symbol(sym.ID, yytext()); }
