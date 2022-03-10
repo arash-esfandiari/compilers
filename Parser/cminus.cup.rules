@@ -101,6 +101,7 @@ type_specifier          ::= INT
                           | VOID
                           ;
 fun_declaration         ::= type_specifier ID LPAREN params RPAREN compound_stmt
+                          ;
 params                  ::= param_list 
                           | VOID
                           ;
@@ -111,6 +112,7 @@ param                   ::= type_specifier ID
                           | type_specifier ID LBRACKET RBRACKET
                           ;
 compound_stmt           ::= LBRACE local_declarations statement_list RBRACE
+                          ;
 local_declarations      ::= local_declarations var_declaration
                           |
                           ;
@@ -168,6 +170,7 @@ factor                  ::= LPAREN expression RPAREN
                           | NUM
                           ;
 call                    ::= ID LPAREN args RPAREN
+                          ;
 args                    ::= arg_list 
                           |
                           ;
