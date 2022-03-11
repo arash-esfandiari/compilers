@@ -77,15 +77,23 @@ terminal PLUS, MINUS, TIMES, DIV, LT, LTEQ, GT, GTEQ, EQ, NEQ, ASSIGN, SEMI, COM
 terminal ID, NUM;
 terminal ERROR;
 
+non terminal NameTy type_specifier;
 
-non terminal DecList program, declaration_list;
-Non terminal Dec declaration;
-Non terminal VarDec var_declaration;
-Non terminal NameTy type_specifier;
+non terminal DecList program, declaration_list, local_declarations;
+non terminal ExpList params, param_list, statement_list, args, arg_list;
+non terminal VarDecList
+non terminal Var var;
+non terminal Exp param, compound_stmt, statement, expression_stmt, expression, simple_expression;
+non terminal IfExp selection_stmt;
+non terminal WhileExp iteration_stmt; 
+non terminal ReturnExp return_stmt; 
+non terminal OpExp relop, addop, mulop; 
+non terminal CallExp call; 
+non terminal Dec declaration;
+non terminal VarDec var_declaration;
 non terminal FunctionDec fun_declaration;
-non terminal params, param_list, param, compound_stmt, local_declarations, statement_list, statement;    
-non terminal expression_stmt, selection_stmt, iteration_stmt, return_stmt, expression, var, simple_expression;
-non terminal relop, additive_expression, addop, term, mulop, factor, call, args, arg_list;       
+
+non terminal additive_expression, , term, , factor;       
 
 /* ----------------------------Grammar Section-------------------- */
 
