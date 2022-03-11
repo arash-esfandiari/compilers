@@ -6,7 +6,7 @@ public class IndexVar extends Var {
     public IndexVar(int row, int col, String name, Exp index) {
         this.row = row;
         this.col = col;
-        this.name = name
+        this.name = name;
         this.index = index;
     }
 

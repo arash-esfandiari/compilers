@@ -78,30 +78,43 @@ terminal ID, NUM;
 terminal ERROR;
 
 non terminal NameTy type_specifier;
-
-non terminal DecList program, declaration_list, local_declarations;
-non terminal ExpList params, param_list, statement_list, args, arg_list;
-non terminal VarDecList
 non terminal Var var;
-non terminal Exp param, compound_stmt, statement, expression_stmt, expression, simple_expression;
+non terminal Exp statement, expression_stmt, expression, simple_expression, additive_expression, term, factor;
 non terminal IfExp selection_stmt;
 non terminal WhileExp iteration_stmt; 
 non terminal ReturnExp return_stmt; 
+non terminal CompoundExp compound_stmt;
 non terminal OpExp relop, addop, mulop; 
 non terminal CallExp call; 
+non terminal ExpList statement_list, args, arg_list; 
 non terminal Dec declaration;
-non terminal VarDec var_declaration;
-non terminal FunctionDec fun_declaration;
+non terminal VarDec var_declaration, param;
+non terminal VarDecList params, param_list, local_declarations;
+non terminal FunctionDec fun_declaration;   
+non terminal DecList program, declaration_list;
 
-non terminal additive_expression, , term, , factor;       
+  
 
 /* ----------------------------Grammar Section-------------------- */
 
 
-program                 ::= declaration_list
+program                 ::= declaration_list:d
+                            {: RESULT = d; :}
                           ;
-declaration_list        ::= declaration_list declaration 
-                          | declaration
+declaration_list        ::= declaration_list:d1 declaration:d2
+                            {: 
+                            DecList d = d1;
+                            while( d.tail != null )
+                                d = d.tail;
+                            d.tail = new DecList(d2, null);
+                            RESULT = d1;
+                            :}
+                          | declaration:d
+                            {: RESULT = new DecList(d, null); :}
+                          | error declaration:d
+                            {: parser.report_error("invalid declaration", null); 
+                                RESULT = new DecList(d, null); 
+                            :}
                           ;
 declaration             ::= var_declaration 
                           | fun_declaration

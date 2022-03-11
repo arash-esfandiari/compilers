@@ -2,11 +2,17 @@ package absyn;
 
 public interface AbsynVisitor {
 
-    public void visit(DecList exp, int level);
+    public void visit(NameTy nameTy, int level);
 
-    public void visit(VarDecList exp, int level);
+    public void visit(SimpleVar simpleVar, int level);
 
-    public void visit(ExpList exp, int level);
+    public void visit(IndexVar indexVar, int level);
+
+    public void visit(DecList decList, int level);
+
+    public void visit(VarDecList varDecList, int level);
+
+    public void visit(ExpList expList, int level);
 
     public void visit(NilExp exp, int level);
 
@@ -28,10 +34,10 @@ public interface AbsynVisitor {
 
     public void visit(CompoundExp exp, int level);
 
-    public void visit(FunctionDec exp, int level);
+    public void visit(FunctionDec functionDec, int level);
 
-    public void visit(SimpleDec exp, int level);
+    public void visit(SimpleDec simpleDec, int level);
 
-    public void visit(ArrayDec exp, int level);
+    public void visit(ArrayDec arrayDec, int level);
 
 }
