@@ -73,10 +73,8 @@ parser code {:
    
 terminal ELSE, IF, INT, RETURN, VOID, WHILE;
 terminal PLUS, MINUS, TIMES, DIV, LT, LTEQ, GT, GTEQ, EQ, NEQ, ASSIGN, SEMI, COMMA, LPAREN, RPAREN, LBRACKET, RBRACKET, LBRACE, RBRACE;
-terminal String ID; 
-terminal int NUM;
+terminal String ID, NUM; 
 terminal ERROR;
-terminal int relop, addop, mulop;
 
 non terminal NameTy type_specifier;
 non terminal Exp statement, expression_stmt, expression, additive_expression, simple_expression, term, factor;
@@ -92,8 +90,8 @@ non terminal VarDec var_declaration, param;
 non terminal VarDecList params, param_list, local_declarations;
 non terminal FunctionDec fun_declaration;   
 non terminal DecList program, declaration_list;
+non terminal Integer relop, addop, mulop;
 
-  
 
 /* ----------------------------Grammar Section-------------------- */
 
@@ -124,7 +122,7 @@ declaration             ::= var_declaration: vd
 var_declaration         ::= type_specifier:ts ID:i SEMI 
                             {: RESULT = new SimpleDec(tsleft, tsright, ts, i); :}
                           | type_specifier:ts ID:i LBRACKET NUM:n RBRACKET SEMI
-                            {: RESULT = new ArrayDec(tsleft, tsright, ts, i, (new IntExp(nleft, nright, n))); :}
+                            {: RESULT = new ArrayDec(tsleft, tsright, ts, i, (new IntExp(nleft, nright, Integer.parseInt(n)))); :}
                           ;
 type_specifier          ::= INT:i
                             {: RESULT = new NameTy(ileft, iright, NameTy.INT); :}
@@ -137,7 +135,7 @@ fun_declaration         ::= type_specifier:ts ID:i LPAREN params:p RPAREN compou
 params                  ::= param_list:pl
                             {: RESULT = pl; :}
                           | VOID:v
-                          {: RESULT = new VarDecList(new SimpleDec(vleft, vright, new NameTy(vleft, vright, NameTy.VOID), null), null); :}
+                          {: RESULT = new VarDecList(new SimpleDec(vleft, vright, new NameTy(vleft, vright, NameTy.VOID), ""), null); :}
                           ;
 param_list              ::= param_list:pl COMMA param:p
                             {: 
@@ -195,7 +193,7 @@ expression_stmt         ::= expression:e SEMI
                             {: RESULT = new NilExp(sright, sleft); :}
                           ;
 selection_stmt          ::= IF LPAREN expression:e RPAREN statement:s
-                            {: RESULT = new IfExp(eleft, eright, e, s, null); :}
+                            {: RESULT = new IfExp(eleft, eright, e, s, new NilExp(eleft, eright)); :}
                           | IF LPAREN expression:e RPAREN statement:s1 ELSE statement:s2
                             {: RESULT = new IfExp(eleft, eright, e, s1, s2); :}
                           ;
@@ -205,7 +203,7 @@ iteration_stmt          ::= WHILE LPAREN expression:e RPAREN statement:s
 return_stmt             ::= RETURN expression:e SEMI 
                             {: RESULT = new ReturnExp(eleft, eright, e); :}
                           | RETURN SEMI:s
-                            {: RESULT = new ReturnExp(sleft, sright, null); :}
+                            {: RESULT = new ReturnExp(sleft, sright, new NilExp(sleft, sright)); :}
                           ;
 expression              ::= var:v ASSIGN expression:e 
                             {: RESULT = new AssignExp(vleft, vright, v, e); :} 
@@ -262,7 +260,7 @@ factor                  ::= LPAREN expression:e RPAREN
                           | call:c 
                             {: RESULT = c; :}  
                           | NUM:n
-                            {: RESULT = new IntExp(nleft, nright, n); :}
+                            {: RESULT = new IntExp(nleft, nright, Integer.parseInt(n)); :}
                           ;
 call                    ::= ID:i LPAREN args:a RPAREN
                             {: RESULT = new CallExp(ileft, iright, i, a); :}
