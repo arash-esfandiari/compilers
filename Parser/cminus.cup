@@ -73,7 +73,8 @@ parser code {:
    
 terminal ELSE, IF, INT, RETURN, VOID, WHILE;
 terminal PLUS, MINUS, TIMES, DIV, LT, LTEQ, GT, GTEQ, EQ, NEQ, ASSIGN, SEMI, COMMA, LPAREN, RPAREN, LBRACKET, RBRACKET, LBRACE, RBRACE;
-terminal ID, NUM;
+terminal String ID; 
+terminal int NUM;
 terminal ERROR;
 
 non terminal NameTy type_specifier;
@@ -100,12 +101,12 @@ non terminal DecList program, declaration_list;
 program                 ::= declaration_list:d
                             {: RESULT = d; :}
                           ;
-/*declaration_list        ::= declaration_list:dl declaration:d
+declaration_list        ::= declaration_list:dl declaration:d
                             {: 
-                            DecList d = dl;
-                            while( d.tail != null )
-                                d = d.tail;
-                            d.tail = new DecList(d, null);
+                            DecList l = dl;
+                            while( l.tail != null )
+                                l = l.tail;
+                            l.tail = new DecList(d, null);
                             RESULT = dl;
                             :}
                           | declaration:d
@@ -133,7 +134,7 @@ type_specifier          ::= INT:i
 fun_declaration         ::= type_specifier:ts ID:i LPAREN params:p RPAREN compound_stmt:cs
                             {: RESULT = new FunctionDec(tsleft, tsright, ts, i, p, cs); :}
                           ;
-params                  ::= param_list:pl
+/*params                  ::= param_list:pl
                             {: RESULT = pl; :}
                           | VOID:v
                           {: RESULT = new VarDecList(new SimpleDec(vleft, vright, new NameTy(vleft, vright, NameTy.VOID), null), null); :}
