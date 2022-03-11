@@ -1,5 +1,5 @@
 /*
-  Created by: Fei Song
+  Created by: Arash Esfandiari and Josh MacCaskil
   File Name: Main.java
   To Build: 
   After the scanner, tiny.flex, and the parser, tiny.cup, have been created.
@@ -10,27 +10,26 @@
 
   where gcd.tiny is an test input file for the tiny language.
 */
-   
+
 import java.io.*;
 import absyn.*;
-   
+
 class Main {
-  public final static boolean SHOW_TREE = true;
-  static public void main(String argv[]) {    
-    /* Start the parser */
-    try {
-      parser p = new parser(new Lexer(new FileReader(argv[0])));
-      Absyn result = (Absyn)(p.parse().value);      
-      if (SHOW_TREE && result != null) {
-         System.out.println("The abstract syntax tree is:");
-         ShowTreeVisitor visitor = new ShowTreeVisitor();
-         result.accept(visitor, 0); 
-      }
-    } catch (Exception e) {
-      /* do cleanup here -- possibly rethrow e */
-      e.printStackTrace();
+    public final static boolean SHOW_TREE = true;
+
+    static public void main(String argv[]) {
+        /* Start the parser */
+        try {
+            parser p = new parser(new Lexer(new FileReader(argv[0])));
+            Absyn result = (Absyn) (p.parse().value);
+            if (SHOW_TREE && result != null) {
+                System.out.println("The abstract syntax tree is:");
+                ShowTreeVisitor visitor = new ShowTreeVisitor();
+                result.accept(visitor, 0);
+            }
+        } catch (Exception e) {
+            /* do cleanup here -- possibly rethrow e */
+            e.printStackTrace();
+        }
     }
-  }
 }
-
-

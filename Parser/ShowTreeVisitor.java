@@ -2,6 +2,7 @@ import absyn.*;
 
 public class ShowTreeVisitor implements AbsynVisitor {
 
+    /* Indentation */
     final static int SPACES = 4;
 
     private void indent(int level) {
@@ -9,21 +10,67 @@ public class ShowTreeVisitor implements AbsynVisitor {
             System.out.print(" ");
     }
 
-    public void visit(NameTy nameTy, int level) {
-        indent(level);
-        System.out.println("NameTy: " + nameTy.typ);
+    /* Types */
+    public void visit(NameTy ty, int level) {
+        String type;
+
+        if (ty.typ == 0) {
+            type = "VOID";
+        } else if (ty.typ == 1) {
+            type = "INT";
+        } else {
+            type = "NONE";
+        }
+
+        System.out.print(type);
     }
 
-    public void visit(SimpleVar simpleVar, int level) {
-        indent(level);
-        System.out.println("SimpleVar: " + simpleVar.name);
+    /************************** Declarations **************************/
+
+    public void visit(DecList DecList, int level) {
+        while (DecList != null) {
+            DecList.head.accept(this, level);
+            DecList = DecList.tail;
+        }
     }
 
-    public void visit(IndexVar indexVar, int level) {
-        indent(level);
-        System.out.println("IndexVar: " + indexVar.name);
-        System.out.println("IndexVar: " + indexVar.index);
+    public void visit(VarDecList VarDecList, int level) {
+        while (VarDecList != null) {
+            VarDecList.head.accept(this, level);
+            VarDecList = VarDecList.tail;
+        }
     }
+
+    public void visit(SimpleDec dec, int level) {
+        indent(level);
+        System.out.print("SimpleDec: ");
+        dec.typ.accept(this, level);
+        System.out.println(" " + dec.name);
+
+    }
+
+    public void visit(ArrayDec dec, int level) {
+        indent(level);
+        System.out.print("ArrayDec: ");
+        dec.typ.accept(this, level);
+        System.out.print(" " + dec.name + " ");
+        dec.size.accept(this, level);
+
+    }
+
+    public void visit(FunctionDec dec, int level) {
+        indent(level);
+        System.out.print("FunctionDec: ");
+        level++;
+        dec.result.accept(this, level);
+        System.out.println(" " + dec.func + " ");
+        // Print Params:
+        dec.params.accept(this, ++level);
+        dec.body.accept(this, level);
+
+    }
+
+    /************************** Expressions **************************/
 
     public void visit(ExpList expList, int level) {
         while (expList != null) {
@@ -32,18 +79,19 @@ public class ShowTreeVisitor implements AbsynVisitor {
         }
     }
 
-    public void visit(DecList decList, int level) {
-        while (decList != null) {
-            decList.head.accept(this, level);
-            decList = decList.tail;
-        }
+    public void visit(NilExp exp, int level) {
+        indent(level);
+        System.out.println("NilExp: ");
     }
 
-    public void visit(VarDecList varDecList, int level) {
-        while (varDecList != null) {
-            varDecList.head.accept(this, level);
-            varDecList = varDecList.tail;
-        }
+    public void visit(IntExp exp, int level) {
+        indent(level);
+        System.out.println("IntExp: " + exp.value);
+    }
+
+    public void visit(VarExp exp, int level) {
+        indent(level);
+        System.out.println("VarExp: ");
     }
 
     public void visit(AssignExp exp, int level) {
@@ -58,20 +106,27 @@ public class ShowTreeVisitor implements AbsynVisitor {
         indent(level);
         System.out.println("IfExp:");
         level++;
+
         exp.test.accept(this, level);
         exp.thenpart.accept(this, level);
-        if (exp.elsepart != null)
+        if (exp.elsepart != null) {
             exp.elsepart.accept(this, level);
+        }
     }
 
-    public void visit(IntExp exp, int level) {
+    public void visit(WhileExp exp, int level) {
         indent(level);
-        System.out.println("IntExp: " + exp.value);
+        System.out.println("WhileExp:");
+        level++;
+        exp.test.accept(this, level);
+        exp.body.accept(this, level);
+
     }
 
     public void visit(OpExp exp, int level) {
         indent(level);
-        System.out.print("OpExp:");
+        System.out.println("OpExp:");
+
         switch (exp.op) {
             case OpExp.PLUS:
                 System.out.println(" + ");
@@ -91,17 +146,17 @@ public class ShowTreeVisitor implements AbsynVisitor {
             case OpExp.NEQ:
                 System.out.println(" != ");
                 break;
-            case OpExp.LT:
-                System.out.println(" < ");
-                break;
-            case OpExp.LTEQ:
-                System.out.println(" <= ");
-                break;
             case OpExp.GT:
                 System.out.println(" > ");
                 break;
             case OpExp.GTEQ:
                 System.out.println(" >= ");
+                break;
+            case OpExp.LT:
+                System.out.println(" < ");
+                break;
+            case OpExp.LTEQ:
+                System.out.println(" <= ");
                 break;
             default:
                 System.out.println("Unrecognized operator at line " + exp.row + " and column " + exp.col);
@@ -111,44 +166,34 @@ public class ShowTreeVisitor implements AbsynVisitor {
         exp.right.accept(this, level);
     }
 
-    public void visit(VarExp varExp, int level) {
-        indent(level);
-        System.out.println("VarExp: ");
-    }
-
-    public void visit(NilExp nilExp, int level) {
-        indent(level);
-        System.out.println("NilExp: ");
-    }
-
-    public void visit(CallExp callExp, int level) {
-        indent(level);
-        System.out.print("CallExp:");
-
-    }
-
-    public void visit(WhileExp exp, int level) {
-
-    }
-
     public void visit(ReturnExp exp, int level) {
+        indent(level);
+        System.out.println("ReturnExp: " + exp.exp);
+    }
 
+    public void visit(CallExp exp, int level) {
+        indent(level);
+        System.out.println("CallExp: " + exp.func);
+        exp.args.accept(this, level);
     }
 
     public void visit(CompoundExp exp, int level) {
-
+        indent(level);
+        System.out.println("CompoundExp: ");
+        exp.decs.accept(this, level);
+        exp.exps.accept(this, level);
     }
 
-    public void visit(FunctionDec exp, int level) {
+    /************************** Vars **************************/
 
+    public void visit(SimpleVar simpleVar, int level) {
+        indent(level);
+        System.out.println("SimpleVar: " + simpleVar.name);
     }
 
-    public void visit(SimpleDec exp, int level) {
-
+    public void visit(IndexVar indexVar, int level) {
+        indent(level);
+        System.out.println("IndexVar: " + indexVar.name);
+        indexVar.index.accept(this, level);
     }
-
-    public void visit(ArrayDec exp, int level) {
-
-    }
-
 }
