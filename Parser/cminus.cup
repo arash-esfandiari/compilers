@@ -74,8 +74,9 @@ parser code {:
 terminal ELSE, IF, INT, RETURN, VOID, WHILE;
 terminal PLUS, MINUS, TIMES, DIV, LT, LTEQ, GT, GTEQ, EQ, NEQ, ASSIGN, SEMI, COMMA, LPAREN, RPAREN, LBRACKET, RBRACKET, LBRACE, RBRACE;
 terminal String ID; 
-terminal int NUM, relop, addop, mulop;
+terminal int NUM;
 terminal ERROR;
+terminal int relop, addop, mulop;
 
 non terminal NameTy type_specifier;
 non terminal Exp statement, expression_stmt, expression, additive_expression, simple_expression, term, factor;
@@ -152,7 +153,7 @@ param_list              ::= param_list:pl COMMA param:p
 param                   ::= type_specifier:ts ID:i 
                             {: RESULT = new SimpleDec(tsleft, tsright, ts, i); :}
                           | type_specifier:ts ID:i LBRACKET RBRACKET
-                          {: RESULT = new ArrayDec(tsleft, tsright, ts, i, null); :}
+                          {: RESULT = new ArrayDec(tsleft, tsright, ts, i, new IntExp(tsleft, tsright, 0)); :}
                           ;
 compound_stmt           ::= LBRACE local_declarations:ld statement_list:sl RBRACE
                             {: RESULT = new CompoundExp(ldleft, ldright, ld, sl); :}

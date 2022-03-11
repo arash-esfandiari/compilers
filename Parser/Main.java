@@ -13,11 +13,11 @@
 
 import java.io.*;
 import absyn.*;
-import absyn.Decs.*;
-import absyn.Exps.*;
-import absyn.Lists.*;
-import absyn.Vars.*;
-import absyn.VarDecs.*;
+// import absyn.Decs.*;
+// import absyn.Exps.*;
+// import absyn.Lists.*;
+// import absyn.Vars.*;
+// import absyn.VarDecs.*;
 
 class Main {
     public final static boolean SHOW_TREE = true;

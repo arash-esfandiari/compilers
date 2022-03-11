@@ -23,3 +23,4 @@ parser.java: cminus.cup
 
 clean:
 	rm -f parser.java Lexer.java sym.java *.class absyn/*.class absyn/Decs/*.class absyn/Exps/*.class absyn/Lists/*.class absyn/Vars/*.class absyn/VarDecs/*.class *~
+
