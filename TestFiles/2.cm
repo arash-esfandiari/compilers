@@ -1,0 +1,17 @@
+
+
+
+
+void main(void) {
+    int x;
+    x = 2
+
+    x == 2 == x;
+    while (x > 1) {
+        x = x - 1
+    } 
+
+    if (x < 10){
+        x = 3;
+    }
+}
