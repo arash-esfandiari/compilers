@@ -8,7 +8,7 @@ void main(void) {
 
     x == 2 == x;
     while (x > 1) {
-        x = x - 1
+        x = x - 1;
     } 
 
     if (x < 10){
