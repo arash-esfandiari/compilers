@@ -77,6 +77,9 @@ terminal String ID, NUM;
 terminal ERROR;
 
 non terminal NameTy type_specifier;
+non terminal DecList program, declaration_list;
+non terminal VarDecList params, param_list, local_declarations;
+non terminal ExpList statement_list, args, arg_list; 
 non terminal Exp statement, expression_stmt, expression, additive_expression, simple_expression, term, factor;
 non terminal VarExp var;
 non terminal IfExp selection_stmt;
@@ -84,20 +87,25 @@ non terminal WhileExp iteration_stmt;
 non terminal ReturnExp return_stmt; 
 non terminal CompoundExp compound_stmt;
 non terminal CallExp call; 
-non terminal ExpList statement_list, args, arg_list; 
 non terminal Dec declaration;
 non terminal VarDec var_declaration, param;
-non terminal VarDecList params, param_list, local_declarations;
 non terminal FunctionDec fun_declaration;   
-non terminal DecList program, declaration_list;
 non terminal Integer relop, addop, mulop;
+non terminal Exp program1;
 
+precedence right ASSIGN;
+precedence nonassoc LT, GT, LTEQ, GTEQ, EQ, NEQ;
+precedence left PLUS, MINUS;
+precedence left DIV, TIMES;
+precedence left ELSE;
 
 /* ----------------------------Grammar Section-------------------- */
 
 
 program                 ::= declaration_list:d
                             {: RESULT = d; :}
+                          | ERROR
+                            {:RESULT = null;:}
                           ;
 declaration_list        ::= declaration_list:dl declaration:d
                             {: 
@@ -123,7 +131,11 @@ var_declaration         ::= type_specifier:ts ID:i SEMI
                             {: RESULT = new SimpleDec(tsleft, tsright, ts, i); :}
                           | type_specifier:ts ID:i LBRACKET NUM:n RBRACKET SEMI
                             {: RESULT = new ArrayDec(tsleft, tsright, ts, i, (new IntExp(nleft, nright, Integer.parseInt(n)))); :}
-                          ;
+                          | type_specifier:t ID:i LBRACKET error:e RBRACKET SEMI
+                            {: parser.report_error("Invalid syntax in array declaration", e); :}
+                          | type_specifier:t error:e SEMI
+                            {: parser.report_error("Invalid syntax in variable declaration", e); :}
+                            ;
 type_specifier          ::= INT:i
                             {: RESULT = new NameTy(ileft, iright, NameTy.INT); :}
                           | VOID:v
@@ -147,11 +159,14 @@ param_list              ::= param_list:pl COMMA param:p
                             :}
                           | param:p
                           {: RESULT = new VarDecList(p, null); :}
+                          | error:e
+                          {:
+                            parser.report_error("Invalid syntax in parameters of function declaration", e); :}
                           ;
 param                   ::= type_specifier:ts ID:i 
                             {: RESULT = new SimpleDec(tsleft, tsright, ts, i); :}
                           | type_specifier:ts ID:i LBRACKET RBRACKET
-                          {: RESULT = new ArrayDec(tsleft, tsright, ts, i, new IntExp(tsleft, tsright, 0)); :}
+                          {: RESULT = new ArrayDec(tsleft, tsright, ts, i, null); :}
                           ;
 compound_stmt           ::= LBRACE local_declarations:ld statement_list:sl RBRACE
                             {: RESULT = new CompoundExp(ldleft, ldright, ld, sl); :}
@@ -164,7 +179,13 @@ local_declarations      ::= local_declarations:ld var_declaration:vd
                                 l.tail = new VarDecList(vd, null);
                                 RESULT = ld;
                             :}
-                          |
+                           | error:e var_declaration:v
+                            {:
+                              parser.report_error ("Invalid syntax in variable declarations", e);
+                              RESULT = new VarDecList(v, null);
+                            :}
+                          | 
+                            {: RESULT = null; :}
                           ;
 statement_list          ::= statement_list:sl statement:s
                             {:	
@@ -175,6 +196,7 @@ statement_list          ::= statement_list:sl statement:s
                                 RESULT = sl;
                             :}
                           |
+                            {: RESULT = null; :}
                           ;
 statement               ::= expression_stmt:es
                             {: RESULT = es; :}
@@ -191,83 +213,73 @@ expression_stmt         ::= expression:e SEMI
                             {: RESULT = e; :}
                           | SEMI:s
                             {: RESULT = new NilExp(sright, sleft); :}
+                          | error:e
+                            {: parser.report_error("Syntax error in expression structure", e); :}
                           ;
 selection_stmt          ::= IF LPAREN expression:e RPAREN statement:s
                             {: RESULT = new IfExp(eleft, eright, e, s, new NilExp(eleft, eright)); :}
                           | IF LPAREN expression:e RPAREN statement:s1 ELSE statement:s2
                             {: RESULT = new IfExp(eleft, eright, e, s1, s2); :}
+                          | IF LPAREN error:e RPAREN statement:s
+                            {: parser.report_error("Invalid expression in selection statement", e); :}
+                          | IF LPAREN error:e RPAREN statement:s ELSE statement:s2
+                            {: parser.report_error("Invalid expression in selection statement", e); :}
                           ;
 iteration_stmt          ::= WHILE LPAREN expression:e RPAREN statement:s
                             {: RESULT = new WhileExp(eleft, eright, e, s); :}
+                          | WHILE:w LPAREN error:e RPAREN statement:s
+                            {: parser.report_error("Invalid expression in iteration statement", e); :}
                           ;
 return_stmt             ::= RETURN expression:e SEMI 
                             {: RESULT = new ReturnExp(eleft, eright, e); :}
                           | RETURN SEMI:s
                             {: RESULT = new ReturnExp(sleft, sright, new NilExp(sleft, sright)); :}
                           ;
-expression              ::= var:v ASSIGN expression:e 
-                            {: RESULT = new AssignExp(vleft, vright, v, e); :} 
-                          | simple_expression:se
-                            {: RESULT = se; :}
-                          ; 
+expression              ::= var:v ASSIGN expression:e
+                            {: RESULT = new AssignExp(vleft, vright, v, e); :}
+                          | expression:s1 PLUS expression:s2
+                            {: RESULT = new OpExp(s1left, s1right, s1, OpExp.PLUS, s2); :}
+                          | expression:s1 MINUS expression:s2
+                            {: RESULT = new OpExp(s1left, s1right, s1, OpExp.MINUS, s2); :}
+                          | expression:s1 TIMES expression:s2
+                            {: RESULT = new OpExp(s1left, s1right, s1, OpExp.TIMES, s2); :}
+                          | expression:s1 DIV expression:s2
+                            {: RESULT = new OpExp(s1left, s1right, s1, OpExp.DIV, s2); :}
+                          | expression:s1 EQ expression:s2
+                            {: RESULT = new OpExp(s1left, s1right, s1, OpExp.EQ, s2); :}
+                          | expression:s1 LT expression:s2
+                            {: RESULT = new OpExp(s1left, s1right, s1, OpExp.LT, s2); :}
+                          | expression:s1 GT expression:s2
+                            {: RESULT = new OpExp(s1left, s1right, s1, OpExp.GT, s2); :}
+                          | expression:s1 GTEQ expression:s2
+                            {: RESULT = new OpExp(s1left, s1right, s1, OpExp.GTEQ, s2); :}
+                          | expression:s1 LTEQ expression:s2
+                            {: RESULT = new OpExp(s1left, s1right, s1, OpExp.LTEQ, s2); :}
+                          | expression:s1 NEQ expression:s2
+                            {: RESULT = new OpExp(s1left, s1right, s1, OpExp.NEQ, s2); :}
+                          | LPAREN expression:s1 RPAREN
+                            {: RESULT = s1; :}
+                          | var:v
+                            {: RESULT = v; :}
+                          | call:c
+                            {: RESULT = c; :}
+                          | NUM:n
+                            {: RESULT = new IntExp(nleft, nright, Integer.parseInt(n)); :}
+                            ;
+                            
 var                     ::= ID:i
                             {: RESULT = new VarExp(ileft, iright, new SimpleVar(ileft, iright, i)); :}
                           | ID:i LBRACKET expression:e RBRACKET
                             {: RESULT = new VarExp(ileft, iright, new IndexVar(ileft, iright, i, e)); :}
                           ;
-simple_expression       ::= additive_expression:ae1 relop:r additive_expression:ae2 
-                            {: RESULT = new OpExp(ae1left, ae2right, ae1, r, ae2); :}
-                          | additive_expression:ae
-                            {: RESULT = ae; :}
-                          ;
-relop                   ::= LTEQ
-                            {: RESULT = OpExp.LTEQ; :}
-                          | LT
-                            {: RESULT = OpExp.LT; :}
-                          | GT
-                            {: RESULT = OpExp.GT; :}
-                          | GTEQ 
-                            {: RESULT = OpExp.GTEQ; :}
-                          | EQ 
-                            {: RESULT = OpExp.EQ; :}
-                          | NEQ
-                            {: RESULT = OpExp.NEQ; :}
-                          ;
-additive_expression     ::= additive_expression:ae addop:a term:t
-                            {: RESULT = new OpExp(aeleft, aeright, ae, a, t); :}
-                          | term:t
-                            {: RESULT = t; :}
-                          ;
-addop                   ::= PLUS 
-                            {: RESULT = OpExp.PLUS; :}
-                          | MINUS
-                            {: RESULT = OpExp.MINUS; :}
-                          ;
-term                    ::= term:t mulop:m factor:f 
-                            {: RESULT = new OpExp(tleft, tright, t, m, f); :}
-                          | factor:f
-                            {: RESULT = f; :}
-                          ;
-mulop                   ::= TIMES 
-                            {: RESULT = OpExp.TIMES; :}
-                          | DIV
-                            {: RESULT = OpExp.DIV; :}
-                          ;
-factor                  ::= LPAREN expression:e RPAREN
-                            {: RESULT = e; :}
-                          | var:v
-                            {: RESULT = v; :}
-                          | call:c 
-                            {: RESULT = c; :}  
-                          | NUM:n
-                            {: RESULT = new IntExp(nleft, nright, Integer.parseInt(n)); :}
-                          ;
+
 call                    ::= ID:i LPAREN args:a RPAREN
                             {: RESULT = new CallExp(ileft, iright, i, a); :}
                           ;
 args                    ::= arg_list:al
                             {: RESULT = al; :}
                           |
+                            {: RESULT = null; :}
                           ;
 arg_list                ::= arg_list:al COMMA expression:e
                             {:	
@@ -279,5 +291,7 @@ arg_list                ::= arg_list:al COMMA expression:e
                             :}
                           | expression:e
                             {: RESULT = new ExpList(e, null); :}
+                          | error:e
+                            {: parser.report_error("Invalid syntax in function arguments", e);:}
                           ; 
-                          
+                       
