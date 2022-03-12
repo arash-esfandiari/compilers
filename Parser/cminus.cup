@@ -102,6 +102,8 @@ precedence left ELSE;
 /* ----------------------------Grammar Section-------------------- */
 
 
+
+
 program                 ::= declaration_list:d
                             {: RESULT = d; :}
                           | ERROR
@@ -185,7 +187,7 @@ local_declarations      ::= local_declarations:ld var_declaration:vd
                               RESULT = new VarDecList(v, null);
                             :}
                           | 
-                            {: RESULT = null; :}
+                            {:RESULT = new VarDecList(null, null);:}
                           ;
 statement_list          ::= statement_list:sl statement:s
                             {:	
@@ -195,8 +197,8 @@ statement_list          ::= statement_list:sl statement:s
                                 l.tail = new ExpList(s, null);
                                 RESULT = sl;
                             :}
-                          |
-                            {: RESULT = null; :}
+                          | 
+                            {:RESULT = new ExpList(null, null);:}
                           ;
 statement               ::= expression_stmt:es
                             {: RESULT = es; :}
@@ -289,9 +291,7 @@ arg_list                ::= arg_list:al COMMA expression:e
                                 l.tail = new ExpList(e, null);
                                 RESULT = al;
                             :}
-                          | expression:e
-                            {: RESULT = new ExpList(e, null); :}
-                          | error:e
-                            {: parser.report_error("Invalid syntax in function arguments", e);:}
+                          | 
+                            {: RESULT = new ExpList(null, null); :}
                           ; 
                        
