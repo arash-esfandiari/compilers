@@ -80,7 +80,7 @@ non terminal NameTy type_specifier;
 non terminal DecList program, declaration_list;
 non terminal VarDecList params, param_list, local_declarations;
 non terminal ExpList statement_list, args, arg_list; 
-non terminal Exp statement, expression_stmt, expression, additive_expression, simple_expression, term, factor;
+non terminal Exp statement, expression_stmt, expression;
 non terminal VarExp var;
 non terminal IfExp selection_stmt;
 non terminal WhileExp iteration_stmt; 
@@ -90,8 +90,6 @@ non terminal CallExp call;
 non terminal Dec declaration;
 non terminal VarDec var_declaration, param;
 non terminal FunctionDec fun_declaration;   
-non terminal Integer relop, addop, mulop;
-non terminal Exp program1;
 
 precedence right ASSIGN;
 precedence nonassoc LT, GT, LTEQ, GTEQ, EQ, NEQ;
@@ -119,9 +117,10 @@ declaration_list        ::= declaration_list:dl declaration:d
                             :}
                           | declaration:d
                             {: RESULT = new DecList(d, null); :}
-                          | error declaration:d
-                            {: parser.report_error("invalid declaration", null); 
-                                RESULT = new DecList(d, null); 
+                          | error:e
+                            {:
+                              parser.report_error ("Invalid program, syntax error in declaration (declaration_list)", e);
+                              RESULT = new DecList(null, null);
                             :}
                           ;
 declaration             ::= var_declaration: vd 
@@ -133,11 +132,11 @@ var_declaration         ::= type_specifier:ts ID:i SEMI
                             {: RESULT = new SimpleDec(tsleft, tsright, ts, i); :}
                           | type_specifier:ts ID:i LBRACKET NUM:n RBRACKET SEMI
                             {: RESULT = new ArrayDec(tsleft, tsright, ts, i, (new IntExp(nleft, nright, Integer.parseInt(n)))); :}
-                          | type_specifier:t ID:i LBRACKET error:e RBRACKET SEMI
-                            {: parser.report_error("Invalid syntax in array declaration", e); :}
-                          | type_specifier:t error:e SEMI
-                            {: parser.report_error("Invalid syntax in variable declaration", e); :}
-                            ;
+                          | type_specifier ID:i LBRACKET error:e RBRACKET SEMI
+                            {: parser.report_error("Invalid variable declaration syntax", e); :}
+                          | type_specifier error:e SEMI
+                            {: parser.report_error("Invalid variable declaration syntax", e); :}
+                          ;
 type_specifier          ::= INT:i
                             {: RESULT = new NameTy(ileft, iright, NameTy.INT); :}
                           | VOID:v
@@ -145,11 +144,21 @@ type_specifier          ::= INT:i
                           ;
 fun_declaration         ::= type_specifier:ts ID:i LPAREN params:p RPAREN compound_stmt:cs
                             {: RESULT = new FunctionDec(tsleft, tsright, ts, i, p, cs); :}
+                          | error:e ID:i LPAREN params:p RPAREN compound_stmt:cs
+                            {: 
+                                parser.report_error("Invalid type_specifier syntax in function declaration", e);
+                                RESULT = new FunctionDec(eleft, eright, new NameTy(eleft, eright, NameTy.VOID), i, p, cs); 
+                            :}
+                          | type_specifier:ts ID:i LPAREN params:p RPAREN error:e
+                            {: 
+                                parser.report_error("Invalid compound statement in function declaration", e);
+                                RESULT = new FunctionDec(tsleft, tsright, ts, i, p, null); 
+                            :}
                           ;
 params                  ::= param_list:pl
                             {: RESULT = pl; :}
                           | VOID:v
-                          {: RESULT = new VarDecList(new SimpleDec(vleft, vright, new NameTy(vleft, vright, NameTy.VOID), ""), null); :}
+                            {: RESULT = new VarDecList(new SimpleDec(vleft, vright, new NameTy(vleft, vright, NameTy.VOID), ""), null); :}
                           ;
 param_list              ::= param_list:pl COMMA param:p
                             {: 
@@ -160,10 +169,12 @@ param_list              ::= param_list:pl COMMA param:p
                                 RESULT = pl;
                             :}
                           | param:p
-                          {: RESULT = new VarDecList(p, null); :}
+                            {: RESULT = new VarDecList(p, null); :}
                           | error:e
-                          {:
-                            parser.report_error("Invalid syntax in parameters of function declaration", e); :}
+                            {:
+                                parser.report_error("Invalid syntax in parameters of function declaration", e); 
+                                RESULT = new VarDecList(new SimpleDec(eleft, eright, null, "ERROR"), null);
+                            :}
                           ;
 param                   ::= type_specifier:ts ID:i 
                             {: RESULT = new SimpleDec(tsleft, tsright, ts, i); :}
@@ -180,11 +191,6 @@ local_declarations      ::= local_declarations:ld var_declaration:vd
                                     l = l.tail;
                                 l.tail = new VarDecList(vd, null);
                                 RESULT = ld;
-                            :}
-                           | error:e var_declaration:v
-                            {:
-                              parser.report_error ("Invalid syntax in variable declarations", e);
-                              RESULT = new VarDecList(v, null);
                             :}
                           | 
                             {:RESULT = new VarDecList(null, null);:}
@@ -216,21 +222,38 @@ expression_stmt         ::= expression:e SEMI
                           | SEMI:s
                             {: RESULT = new NilExp(sright, sleft); :}
                           | error:e
-                            {: parser.report_error("Syntax error in expression structure", e); :}
+                            {: parser.report_error("Invalid expression statement structure", e); :}
                           ;
 selection_stmt          ::= IF LPAREN expression:e RPAREN statement:s
                             {: RESULT = new IfExp(eleft, eright, e, s, new NilExp(eleft, eright)); :}
                           | IF LPAREN expression:e RPAREN statement:s1 ELSE statement:s2
                             {: RESULT = new IfExp(eleft, eright, e, s1, s2); :}
-                          | IF LPAREN error:e RPAREN statement:s
-                            {: parser.report_error("Invalid expression in selection statement", e); :}
-                          | IF LPAREN error:e RPAREN statement:s ELSE statement:s2
-                            {: parser.report_error("Invalid expression in selection statement", e); :}
+                          | IF:i LPAREN error:e RPAREN statement:s
+                            {: parser.report_error("Invalid if statement structure", e);
+                               RESULT = new IfExp(ileft, iright, new NilExp(eleft, eright), s, new NilExp(sleft, sright));
+                            :}
+                          | IF:i LPAREN error:e RPAREN statement:s ELSE statement:s2
+                            {: parser.report_error("Invalid if statement structure", e);
+                               RESULT = new IfExp(ileft, iright, new NilExp(eleft, eright), s, s2);
+                            :}
                           ;
 iteration_stmt          ::= WHILE LPAREN expression:e RPAREN statement:s
                             {: RESULT = new WhileExp(eleft, eright, e, s); :}
                           | WHILE:w LPAREN error:e RPAREN statement:s
-                            {: parser.report_error("Invalid expression in iteration statement", e); :}
+                            {: 
+                                parser.report_error("Invalid expression in while loop", e); 
+                                RESULT = new WhileExp(wleft, wright, null, s);
+                            :}
+                          | WHILE:w ERROR:err expression:e RPAREN statement:s
+                            {: 
+                                parser.report_error("Missing left parenthesis in while loop", err); 
+                                RESULT = new WhileExp(wleft, wright, e, s);
+                            :}
+                          | WHILE:w LPAREN expression:e ERROR:err statement:s
+                            {: 
+                                parser.report_error("Missing right parenthesis in while loop", err); 
+                                RESULT = new WhileExp(wleft, wright, e, s);
+                            :}
                           ;
 return_stmt             ::= RETURN expression:e SEMI 
                             {: RESULT = new ReturnExp(eleft, eright, e); :}
@@ -273,6 +296,11 @@ var                     ::= ID:i
                             {: RESULT = new VarExp(ileft, iright, new SimpleVar(ileft, iright, i)); :}
                           | ID:i LBRACKET expression:e RBRACKET
                             {: RESULT = new VarExp(ileft, iright, new IndexVar(ileft, iright, i, e)); :}
+                          | ID:i LBRACKET error:e RBRACKET
+                            {: 
+                                parser.report_error ("Invalid program, syntax error in declaration (declaration_list)", e);
+                                RESULT = new VarExp(ileft, iright, new IndexVar(ileft, iright, i, null)); 
+                            :}
                           ;
 
 call                    ::= ID:i LPAREN args:a RPAREN
@@ -290,7 +318,7 @@ arg_list                ::= arg_list:al COMMA expression:e
                                     l = l.tail;
                                 l.tail = new ExpList(e, null);
                                 RESULT = al;
-                            :}
+                            :} 
                           | 
                             {: RESULT = new ExpList(null, null); :}
                           ; 
