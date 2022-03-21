@@ -10,7 +10,12 @@ public class ShowTreeVisitor implements AbsynVisitor {
     }
 
     public void visit(NameTy exp, int level) {
-
+        if (exp.typ == 0) {
+            System.out.println("VOID");
+        }
+        if (exp.typ == 0) {
+            System.out.println("INT");
+        }
     }
 
     public void visit(SimpleVar exp, int level) {
@@ -35,8 +40,9 @@ public class ShowTreeVisitor implements AbsynVisitor {
         System.out.println("VarExp: ");
         level++;
 
-        // if (exp.variable != null)
-        // exp.variable.accept(this, level);
+        if (exp.variable != null) {
+            exp.variable.accept(this, level);
+        }
     }
 
     public void visit(IntExp exp, int level) {
@@ -173,35 +179,41 @@ public class ShowTreeVisitor implements AbsynVisitor {
         indent(level);
         String ty = new String("");
 
-        if (exp.typ.typ == NameTy.VOID)
+        if (exp.typ.typ == NameTy.VOID) {
             ty = new String("VOID");
-        else if (exp.typ.typ == NameTy.INT)
+        } else if (exp.typ.typ == NameTy.INT) {
             ty = new String("INT");
+        }
 
+        if (exp.size != null) {
+            System.out.println("ArrayDec: " + exp.name + "[" + exp.size.value + "]" + " - " + ty);
+        } else
+            System.out.println("ArrayDec: " + exp.name + "[]" + " - " + ty);
     }
 
     public void visit(DecList decList, int level) {
         while (decList != null) {
-            if (decList.head != null)
+            if (decList.head != null) {
                 decList.head.accept(this, level);
-
+            }
             decList = decList.tail;
         }
     }
 
     public void visit(VarDecList varDecList, int level) {
         while (varDecList != null) {
-            if (varDecList.head != null)
+            if (varDecList.head != null) {
                 varDecList.head.accept(this, level);
-
+            }
             varDecList = varDecList.tail;
         }
     }
 
     public void visit(ExpList expList, int level) {
         while (expList != null) {
-            if (expList.head != null)
+            if (expList.head != null) {
                 expList.head.accept(this, level);
+            }
             expList = expList.tail;
         }
     }
