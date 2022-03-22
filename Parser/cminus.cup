@@ -221,8 +221,8 @@ expression_stmt         ::= expression:e SEMI
                             {: RESULT = e; :}
                           | SEMI:s
                             {: RESULT = new NilExp(sright, sleft); :}
-                          | error:e
-                            {: parser.report_error("Invalid expression statement structure", e); :}
+                          | error:e SEMI
+                            {: parser.report_error("Invalid expression statement ", e); :}
                           ;
 selection_stmt          ::= IF LPAREN expression:e RPAREN statement:s
                             {: RESULT = new IfExp(eleft, eright, e, s, new NilExp(eleft, eright)); :}
@@ -298,7 +298,7 @@ var                     ::= ID:i
                             {: RESULT = new VarExp(ileft, iright, new IndexVar(ileft, iright, i, e)); :}
                           | ID:i LBRACKET error:e RBRACKET
                             {: 
-                                parser.report_error ("Invalid program, syntax error in declaration (declaration_list)", e);
+                                parser.report_error ("Invalid expression in id[expression]", e);
                                 RESULT = new VarExp(ileft, iright, new IndexVar(ileft, iright, i, null)); 
                             :}
                           ;
@@ -319,7 +319,7 @@ arg_list                ::= arg_list:al COMMA expression:e
                                 l.tail = new ExpList(e, null);
                                 RESULT = al;
                             :} 
-                          | 
-                            {: RESULT = new ExpList(null, null); :}
+                          | expression:e
+                            {: RESULT = new ExpList(e, null); :}
                           ; 
                        
