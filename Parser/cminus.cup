@@ -321,5 +321,7 @@ arg_list                ::= arg_list:al COMMA expression:e
                             :} 
                           | expression:e
                             {: RESULT = new ExpList(e, null); :}
+                          | error:e
+                            {: parser.report_error("Invalid function arguments ", e); :}
                           ; 
                        
