@@ -1,17 +1,15 @@
 JAVA=java
 JAVAC=javac
 JFLEX=jflex
-#CLASSPATH=-cp /usr/share/java/cup.jar:.
-#CUP=cup
 #JFLEX=~/Projects/jflex/bin/jflex
 CLASSPATH=-cp ../java-cup-11b.jar:.
 CUP=$(JAVA) $(CLASSPATH) java_cup.Main
 
 
-all: Main.class
+all: CM.class
 # absyn/Decs/*.java absyn/Exps/*.java absyn/Lists/*.java absyn/Vars/*.java absyn/VarDecs/*.java
 
-Main.class: absyn/*.java  parser.java sym.java Lexer.java ShowTreeVisitor.java Scanner.java Main.java
+CM.class: absyn/*.java parser.java sym.java Lexer.java ShowTreeVisitor.java Scanner.java CM.java
 
 %.class: %.java
 	$(JAVAC) $(CLASSPATH) $^
