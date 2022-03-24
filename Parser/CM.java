@@ -46,16 +46,16 @@ class CM {
             parser p = new parser(new Lexer(new FileReader(argv[0])));
             Absyn absTree = (Absyn) (p.parse().value);
 
+            /* Save abs tree to syntaxTree.abs */
             if ((SHOW_TREE || SHOW_SYMBOL_TABLE) && absTree != null) {
                 absTreeFile.createNewFile();
                 ShowTreeVisitor visitor = new ShowTreeVisitor();
                 absTree.accept(visitor, 0);
             }
-
+            /* Perform semantic analysis and save symbolTree */
             if (SHOW_SYMBOL_TABLE && absTree != null) {
                 absTreeFile.createNewFile();
                 symbolTableFile.createNewFile();
-                System.out.println("The symbol table is:");
                 SemanticAnalyzer analyzer = new SemanticAnalyzer();
                 absTree.accept(analyzer, 0);
             }

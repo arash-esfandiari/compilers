@@ -1,183 +1,47 @@
-ArrayDec: x[10] - INT
-FunctionDec: minloc INT
-    ArrayDec: a[] - INT
-    SimpleDec: low INT
-    SimpleDec: high INT
+FunctionDec: gcd INT
+    SimpleDec: u INT
+    SimpleDec: v INT
     CompoundExp: 
-        SimpleDec: i INT
-        SimpleDec: x INT
-        SimpleDec: k INT
-        AssignExp:
-            VarExp: 
-                SimpleVar: k
-            VarExp: 
-                SimpleVar: low
-        AssignExp:
-            VarExp: 
-                SimpleVar: x
-            VarExp: 
-                IndexVar: a
+        IfExp:
+            OpExp: == 
+                VarExp: 
+                    SimpleVar: v
+                IntExp: 0
+            ReturnExp: 
+                VarExp: 
+                    SimpleVar: u
+            ReturnExp: 
+                CallExp: gcd
                     VarExp: 
-                        SimpleVar: low
-        AssignExp:
-            VarExp: 
-                SimpleVar: i
-            OpExp: + 
-                VarExp: 
-                    SimpleVar: low
-                IntExp: 1
-        WhileExp: 
-            OpExp: < 
-                VarExp: 
-                    SimpleVar: i
-                VarExp: 
-                    SimpleVar: high
-            CompoundExp: 
-                IfExp:
-                    OpExp: < 
+                        SimpleVar: v
+                    OpExp: - 
                         VarExp: 
-                            IndexVar: a
+                            SimpleVar: u
+                        OpExp: * 
+                            OpExp: / 
                                 VarExp: 
-                                    SimpleVar: i
-                        VarExp: 
-                            SimpleVar: x
-                    CompoundExp: 
-                        AssignExp:
+                                    SimpleVar: u
+                                VarExp: 
+                                    SimpleVar: v
                             VarExp: 
-                                SimpleVar: x
-                            VarExp: 
-                                IndexVar: a
-                                    VarExp: 
-                                        SimpleVar: i
-                        AssignExp:
-                            VarExp: 
-                                SimpleVar: k
-                            VarExp: 
-                                SimpleVar: i
-                    NilExp:
-                AssignExp:
-                    VarExp: 
-                        SimpleVar: i
-                    OpExp: + 
-                        VarExp: 
-                            SimpleVar: i
-                        IntExp: 1
-        ReturnExp: 
-            VarExp: 
-                SimpleVar: k
-FunctionDec: sort VOID
-    ArrayDec: a[] - INT
-    SimpleDec: low INT
-    SimpleDec: high INT
-    CompoundExp: 
-        SimpleDec: i INT
-        SimpleDec: k INT
-        AssignExp:
-            VarExp: 
-                SimpleVar: i
-            VarExp: 
-                SimpleVar: low
-        WhileExp: 
-            OpExp: < 
-                VarExp: 
-                    SimpleVar: i
-                OpExp: - 
-                    VarExp: 
-                        SimpleVar: high
-                    IntExp: 1
-            CompoundExp: 
-                SimpleDec: t INT
-                AssignExp:
-                    VarExp: 
-                        SimpleVar: k
-                    CallExp: minloc
-                        VarExp: 
-                            SimpleVar: a
-                        VarExp: 
-                            SimpleVar: i
-                        VarExp: 
-                            SimpleVar: high
-                AssignExp:
-                    VarExp: 
-                        SimpleVar: t
-                    VarExp: 
-                        IndexVar: a
-                            VarExp: 
-                                SimpleVar: k
-                AssignExp:
-                    VarExp: 
-                        IndexVar: a
-                            VarExp: 
-                                SimpleVar: k
-                    VarExp: 
-                        IndexVar: a
-                            VarExp: 
-                                SimpleVar: i
-                AssignExp:
-                    VarExp: 
-                        IndexVar: a
-                            VarExp: 
-                                SimpleVar: i
-                    VarExp: 
-                        SimpleVar: t
-                AssignExp:
-                    VarExp: 
-                        SimpleVar: i
-                    OpExp: + 
-                        VarExp: 
-                            SimpleVar: i
-                        IntExp: 1
+                                SimpleVar: v
 FunctionDec: main VOID
     SimpleDec:  VOID
     CompoundExp: 
-        SimpleDec: i INT
+        SimpleDec: x INT
+        SimpleDec: y INT
+        SimpleDec: y INT
         AssignExp:
-            VarExp: 
-                SimpleVar: i
-            IntExp: 0
-        WhileExp: 
-            OpExp: < 
-                VarExp: 
-                    SimpleVar: i
-                IntExp: 10
-            CompoundExp: 
-                AssignExp:
-                    VarExp: 
-                        IndexVar: x
-                            VarExp: 
-                                SimpleVar: i
-                    CallExp: input
-                AssignExp:
-                    VarExp: 
-                        SimpleVar: i
-                    OpExp: + 
-                        VarExp: 
-                            SimpleVar: i
-                        IntExp: 1
-        CallExp: sort
             VarExp: 
                 SimpleVar: x
-            IntExp: 0
-            IntExp: 10
+            CallExp: input
         AssignExp:
             VarExp: 
-                SimpleVar: i
-            IntExp: 0
-        WhileExp: 
-            OpExp: < 
+                SimpleVar: y
+            CallExp: input
+        CallExp: output
+            CallExp: gcd
                 VarExp: 
-                    SimpleVar: i
-                IntExp: 10
-            CompoundExp: 
-                CallExp: output
-                    VarExp: 
-                        IndexVar: x
-                            VarExp: 
-                                SimpleVar: i
-                AssignExp:
-                    VarExp: 
-                        SimpleVar: i
-                    OpExp: + 
-                        VarExp: 
-                            SimpleVar: i
-                        IntExp: 1
+                    SimpleVar: x
+                VarExp: 
+                    SimpleVar: y

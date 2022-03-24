@@ -59,21 +59,18 @@ public class SemanticAnalyzer implements AbsynVisitor {
      * Function: Look up the type of declaration if exists in the HashMap table
      * loopup definition for name
      * Param: NodeType to be looked up
-     * Return: Returns 1 if int, 0 for void, -1 if it does not exist
+     * Return: Returns NodeType of if it exists, null otherwise
      */
-    public int lookup(String name) {
+    public NodeType lookup(String name) {
         if (table.containsKey(name)) {
             ArrayList<NodeType> list = table.get(name);
             for (int i = 0; i < list.size(); i++) {
                 if (list.get(i).name.equals(name)) {
-                    if (isInteger(list.get(i).def)) {
-                        return 1;
-                    } else
-                        return 0;
+                    return list.get(i);
                 }
             }
         }
-        return -1;
+        return null;
     }
 
     /*
@@ -153,16 +150,18 @@ public class SemanticAnalyzer implements AbsynVisitor {
 
     /* Vars */
     public void visit(SimpleVar simpleVar, int level) {
-        if (lookup(simpleVar.name) == -1) {
-            System.err.println("Invalid use of undeclared variable '" + simpleVar.name + "'' at: " + simpleVar.row
+        if (lookup(simpleVar.name) == null) {
+            System.err.println("Invalid use of undeclared variable '" + simpleVar.name +
+                    "'' at: " + simpleVar.row
                     + " column: " + simpleVar.col);
         }
     }
 
     public void visit(IndexVar indexVar, int level) {
         indexVar.index.accept(this, level + 1);
-        if (lookup(indexVar.name) == -1) {
-            System.err.println("Invalid use of undeclared variable '" + indexVar.name + "'' at: " + indexVar.row
+        if (lookup(indexVar.name) == null) {
+            System.err.println("Invalid use of undeclared variable '" + indexVar.name +
+                    "'' at: " + indexVar.row
                     + " column: " + indexVar.col);
         }
     }
@@ -176,7 +175,9 @@ public class SemanticAnalyzer implements AbsynVisitor {
         if (exp.variable != null) {
             exp.variable.accept(this, level + 1);
         }
-        exp.dtype = new SimpleDec(exp.row, exp.col, new NameTy(exp.row, exp.col, 0), "VarExpression");
+        NodeType nodeType = lookup(exp.variable.name);
+        if (nodeType != null)
+            exp.dtype = nodeType.def;
     }
 
     public void visit(IntExp exp, int level) {
@@ -186,9 +187,10 @@ public class SemanticAnalyzer implements AbsynVisitor {
     public void visit(CallExp exp, int level) {
         if (exp.args != null)
             exp.args.accept(this, level + 1);
-        int expType = lookup(exp.func);
-        if (expType != -1) {
-            exp.dtype = new SimpleDec(exp.row, exp.col, new NameTy(exp.row, exp.col, expType), exp.func);
+        NodeType expType = lookup(exp.func);
+        if (expType != null) {
+            int type = expType.def.typ.typ;
+            exp.dtype = new SimpleDec(exp.row, exp.col, new NameTy(exp.row, exp.col, type), exp.func);
         } else {
             System.err.println("Invalid call to undefined function at line: " + exp.row + " column: " + exp.col);
         }
@@ -223,7 +225,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
         }
         if (!isInteger(exp.lhs.dtype) && !isInteger(exp.rhs.dtype)) {
             exp.dtype = exp.lhs.dtype;
-            System.err.println("Invalid assignment between two void types at line: " + exp.row + " column: " + exp.col);
+            System.err.println("Invalid assignment between void and void at line: " + exp.row + " column: " + exp.col);
         } else if (isInteger(exp.lhs.dtype) && !isInteger(exp.rhs.dtype)) {
             exp.dtype = exp.lhs.dtype;
             System.err.println("Invalid assignment between int and void at line: " + exp.row + " column: " + exp.col);
@@ -239,7 +241,9 @@ public class SemanticAnalyzer implements AbsynVisitor {
         if (exp.elsepart != null)
             exp.elsepart.accept(this, level);
         exp.dtype = new SimpleDec(exp.row, exp.col, new NameTy(exp.row, exp.col, 1), "IfExpression");
-        ;
+        if (isInteger(exp.test.dtype)) {
+            System.err.println("Invalid test expression for if statement at line: " + exp.row + " column: " + exp.col);
+        }
     }
 
     public void visit(WhileExp exp, int level) {
@@ -269,6 +273,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
 
     /* Declarations */
     public void visit(FunctionDec funcDec, int level) {
+        insert(new NodeType(funcDec.func, funcDec, level - 1));
         indent(level);
         writeToFile("Entering the scope of function: " + funcDec.func, true);
         if (funcDec.params != null)
@@ -277,18 +282,38 @@ public class SemanticAnalyzer implements AbsynVisitor {
         if (funcDec.body != null)
             funcDec.body.accept(this, level);
 
-        insert(new NodeType(funcDec.func, funcDec, level - 1));
         delete(level);
         indent(level);
         writeToFile("Leaving the scope of function", true);
     }
 
     public void visit(SimpleDec simpleDec, int level) {
-        insert(new NodeType(simpleDec.name, simpleDec, level - 1));
+        NodeType nodeType = new NodeType(simpleDec.name, simpleDec, level - 1);
+        NodeType alreadyExists = lookup(simpleDec.name);
+
+        if (alreadyExists != null && alreadyExists.level == level - 1)
+            System.err.println("Invalid declaration of '" + simpleDec.name + "'. variable already declared");
+        if (!isInteger(nodeType.def))
+            System.err.println(
+                    "Invalid declaration of void '" + simpleDec.name
+                            + "'. void variable does not semantically make sense.");
+
+        insert(nodeType);
     }
 
     public void visit(ArrayDec arrayDec, int level) {
-        insert(new NodeType(arrayDec.name, arrayDec, level - 1));
+        NodeType nodeType = new NodeType(arrayDec.name, arrayDec, level - 1);
+        NodeType alreadyExists = lookup(arrayDec.name);
+
+        if (alreadyExists != null && alreadyExists.level == level)
+            System.err.println("Invalid declaration of '" + arrayDec.name + "'. variable already declared");
+
+        if (!isInteger(nodeType.def))
+            System.err.println(
+                    "Invalid declaration of void " + arrayDec.name
+                            + "[] void variable does not semantically make sense.");
+
+        insert(nodeType);
     }
 
 }
