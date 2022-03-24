@@ -1,19 +1,44 @@
 Entering global scope
-    Entering the scope of function: gcd
+    Entering the scope of function: minloc
+    Entering a new block: 
         Entering a new block: 
+            Entering a new block: 
+            Leaving the block 
         Leaving the block 
-        u: int
-        v: int
+        a: int
+        high: int
+        low: int
+        x: int
+        i: int
+        k: int
+    Leaving the block 
+    Leaving the scope of function
+    Entering the scope of function: sort
+    Entering a new block: 
+        Entering a new block: 
+            t: int
+        Leaving the block 
+        a: int
+        high: int
+        low: int
+        i: int
+        k: int
+    Leaving the block 
     Leaving the scope of function
     Entering the scope of function: main
+    Entering a new block: 
         Entering a new block: 
-            x: int
-            y: int
+        Leaving the block 
+        Entering a new block: 
         Leaving the block 
         : void
+        i: int
+    Leaving the block 
     Leaving the scope of function
+    main: void
+    sort: void
     output: void
     input: int
-    gcd: int
-    main: void
+    minloc: int
+    x: int
 Leaving global scope

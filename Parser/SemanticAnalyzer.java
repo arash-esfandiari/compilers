@@ -275,7 +275,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
             funcDec.params.accept(this, level + 1);
 
         if (funcDec.body != null)
-            funcDec.body.accept(this, level + 1);
+            funcDec.body.accept(this, level);
 
         insert(new NodeType(funcDec.func, funcDec, level - 1));
         delete(level);
