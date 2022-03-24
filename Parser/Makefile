@@ -9,7 +9,7 @@ CUP=$(JAVA) $(CLASSPATH) java_cup.Main
 all: CM.class
 # absyn/Decs/*.java absyn/Exps/*.java absyn/Lists/*.java absyn/Vars/*.java absyn/VarDecs/*.java
 
-CM.class: absyn/*.java parser.java sym.java Lexer.java ShowTreeVisitor.java Scanner.java CM.java
+CM.class: absyn/*.java parser.java sym.java Lexer.java ShowTreeVisitor.java SemanticAnalyzer.java Scanner.java CM.java
 
 %.class: %.java
 	$(JAVAC) $(CLASSPATH) $^

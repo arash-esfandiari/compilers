@@ -1,43 +1,61 @@
 import absyn.*;
+import java.io.FileWriter;
+import java.io.IOException;
 
 public class ShowTreeVisitor implements AbsynVisitor {
 
     final static int SPACES = 4;
 
+    private void writeToFile(String string, boolean nextLine) {
+        try {
+            FileWriter myWriter = new FileWriter("syntaxTree.abs", true);
+            if (nextLine) {
+                myWriter.write(string + "\n");
+            } else
+                myWriter.write(string);
+            myWriter.close();
+        } catch (IOException e) {
+            System.out.println("FileWriter unsuccessful");
+            e.printStackTrace();
+        }
+    }
+
     private void indent(int level) {
         for (int i = 0; i < level * SPACES; i++)
-            System.out.print(" ");
+            writeToFile(" ", false);
     }
 
     public void visit(NameTy exp, int level) {
         if (exp.typ == 0) {
-            System.out.println("VOID");
+            writeToFile("VOID", true);
         }
         if (exp.typ == 0) {
-            System.out.println("INT");
+            writeToFile("INT", true);
         }
     }
 
+    /* Vars */
     public void visit(SimpleVar exp, int level) {
         indent(level);
-        System.out.println("SimpleVar: " + exp.name);
+        writeToFile("SimpleVar: " + exp.name, true);
     }
 
     public void visit(IndexVar exp, int level) {
         indent(level);
-        System.out.println("IndexVar: " + exp.name);
+        writeToFile("IndexVar: " + exp.name, true);
         level++;
         exp.index.accept(this, level);
     }
 
+    /* Expressions */
     public void visit(NilExp exp, int level) {
         indent(level);
-        System.out.println("NilExp:");
+        writeToFile("NilExp:", true);
     }
 
     public void visit(VarExp exp, int level) {
         indent(level);
-        System.out.println("VarExp: ");
+        writeToFile("VarExp: ", true);
         level++;
 
         if (exp.variable != null) {
@@ -47,12 +65,12 @@ public class ShowTreeVisitor implements AbsynVisitor {
 
     public void visit(IntExp exp, int level) {
         indent(level);
-        System.out.println("IntExp: " + exp.value);
+        writeToFile("IntExp: " + exp.value, true);
     }
 
     public void visit(CallExp exp, int level) {
         indent(level);
-        System.out.println("CallExp: " + exp.func);
+        writeToFile("CallExp: " + exp.func, true);
         level++;
         if (exp.args != null)
             exp.args.accept(this, level);
@@ -60,40 +78,40 @@ public class ShowTreeVisitor implements AbsynVisitor {
 
     public void visit(OpExp exp, int level) {
         indent(level);
-        System.out.print("OpExp:");
+        writeToFile("OpExp:", false);
         switch (exp.op) {
             case OpExp.PLUS:
-                System.out.println(" + ");
+                writeToFile(" + ", true);
                 break;
             case OpExp.MINUS:
-                System.out.println(" - ");
+                writeToFile(" - ", true);
                 break;
             case OpExp.TIMES:
-                System.out.println(" * ");
+                writeToFile(" * ", true);
                 break;
             case OpExp.DIV:
-                System.out.println(" / ");
+                writeToFile(" / ", true);
                 break;
             case OpExp.EQ:
-                System.out.println(" == ");
+                writeToFile(" == ", true);
                 break;
             case OpExp.NEQ:
-                System.out.println(" != ");
+                writeToFile(" != ", true);
                 break;
             case OpExp.LT:
-                System.out.println(" < ");
+                writeToFile(" < ", true);
                 break;
             case OpExp.LTEQ:
-                System.out.println(" <= ");
+                writeToFile(" <= ", true);
                 break;
             case OpExp.GT:
-                System.out.println(" > ");
+                writeToFile(" > ", true);
                 break;
             case OpExp.GTEQ:
-                System.out.println(" >= ");
+                writeToFile(" >= ", true);
                 break;
             default:
-                System.out.println("Invalid operator at line " + exp.row + " and column " + exp.col);
+                writeToFile("Invalid operator at line " + exp.row + " and column " + exp.col, true);
         }
         level++;
         exp.left.accept(this, level);
@@ -102,7 +120,7 @@ public class ShowTreeVisitor implements AbsynVisitor {
 
     public void visit(AssignExp exp, int level) {
         indent(level);
-        System.out.println("AssignExp:");
+        writeToFile("AssignExp:", true);
         level++;
         exp.lhs.accept(this, level);
         exp.rhs.accept(this, level);
@@ -110,7 +128,7 @@ public class ShowTreeVisitor implements AbsynVisitor {
 
     public void visit(IfExp exp, int level) {
         indent(level);
-        System.out.println("IfExp:");
+        writeToFile("IfExp:", true);
         level++;
         exp.test.accept(this, level);
         exp.thenpart.accept(this, level);
@@ -120,7 +138,7 @@ public class ShowTreeVisitor implements AbsynVisitor {
 
     public void visit(WhileExp exp, int level) {
         indent(level);
-        System.out.println("WhileExp: ");
+        writeToFile("WhileExp: ", true);
         level++;
         if (exp.test != null)
             exp.test.accept(this, level);
@@ -130,7 +148,7 @@ public class ShowTreeVisitor implements AbsynVisitor {
 
     public void visit(ReturnExp exp, int level) {
         indent(level);
-        System.out.println("ReturnExp: ");
+        writeToFile("ReturnExp: ", true);
         level++;
 
         if (exp.exp != null)
@@ -139,7 +157,7 @@ public class ShowTreeVisitor implements AbsynVisitor {
 
     public void visit(CompoundExp exp, int level) {
         indent(level);
-        System.out.println("CompoundExp: ");
+        writeToFile("CompoundExp: ", true);
 
         if (exp.decs != null && exp.exps != null)
             level++;
@@ -150,12 +168,13 @@ public class ShowTreeVisitor implements AbsynVisitor {
             exp.exps.accept(this, level);
     }
 
+    /* Declarations */
     public void visit(FunctionDec exp, int level) {
         indent(level);
-        if (exp.result.typ == NameTy.VOID)
-            System.out.println("FunctionDec: " + exp.func + " VOID");
-        else if (exp.result.typ == NameTy.INT)
-            System.out.println("FunctionDec: " + exp.func + " INT");
+        if (exp.typ.typ == NameTy.VOID)
+            writeToFile("FunctionDec: " + exp.func + " VOID", true);
+        else if (exp.typ.typ == NameTy.INT)
+            writeToFile("FunctionDec: " + exp.func + " INT", true);
 
         level++;
 
@@ -169,12 +188,11 @@ public class ShowTreeVisitor implements AbsynVisitor {
     public void visit(SimpleDec exp, int level) {
         indent(level);
         if (exp.typ.typ == NameTy.VOID)
-            System.out.println("SimpleDec: " + exp.name + " VOID");
+            writeToFile("SimpleDec: " + exp.name + " VOID", true);
         else if (exp.typ.typ == NameTy.INT)
-            System.out.println("SimpleDec: " + exp.name + " INT");
+            writeToFile("SimpleDec: " + exp.name + " INT", true);
     }
 
-    /**/
     public void visit(ArrayDec exp, int level) {
         indent(level);
         String ty = new String("");
@@ -186,11 +204,12 @@ public class ShowTreeVisitor implements AbsynVisitor {
         }
 
         if (exp.size != null) {
-            System.out.println("ArrayDec: " + exp.name + "[" + exp.size.value + "]" + " - " + ty);
+            writeToFile("ArrayDec: " + exp.name + "[" + exp.size.value + "]" + " - " + ty, true);
         } else
-            System.out.println("ArrayDec: " + exp.name + "[]" + " - " + ty);
+            writeToFile("ArrayDec: " + exp.name + "[]" + " - " + ty, true);
     }
 
+    /* Lists */
     public void visit(DecList decList, int level) {
         while (decList != null) {
             if (decList.head != null) {

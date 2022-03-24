@@ -13,6 +13,7 @@
 
 import java.io.*;
 import absyn.*;
+import java.io.File;
 
 class CM {
     public static boolean SHOW_TREE = false;
@@ -21,21 +22,42 @@ class CM {
 
     static public void main(String argv[]) {
         /* Start the parser */
+        String codeName;
+        int firstIndex = argv[1].indexOf(".");
+        if (firstIndex != -1) {
+            codeName = argv[1].substring(0, firstIndex); // this will give abc
+        }
+        /* Create Tree files */
+        File absTreeFile = new File("syntaxTree.abs");
+        File symbolTableFile = new File("symbolTable.sym");
+        absTreeFile.delete();
+        symbolTableFile.delete();
+        /* Determine flag */
         try {
-            for (int i = 0; i < argv.length; i++)
-                if (argv[i].equals("-a")) {
+            for (String arg : argv)
+                if (arg.equals("-a")) {
                     SHOW_TREE = true;
-                } else if (argv[i].equals("-s")) {
+                } else if (arg.equals("-s")) {
                     SHOW_SYMBOL_TABLE = true;
-                } else if (argv[i].equals("-c")) {
+                } else if (arg.equals("-c")) {
                     GENERATE_CODE = true;
                 }
+            /* Build syntax tree */
             parser p = new parser(new Lexer(new FileReader(argv[0])));
-            Absyn result = (Absyn) (p.parse().value);
-            if (SHOW_TREE && result != null) {
-                System.out.println("The abstract syntax tree is:");
+            Absyn absTree = (Absyn) (p.parse().value);
+
+            if ((SHOW_TREE || SHOW_SYMBOL_TABLE) && absTree != null) {
+                absTreeFile.createNewFile();
                 ShowTreeVisitor visitor = new ShowTreeVisitor();
-                result.accept(visitor, 0);
+                absTree.accept(visitor, 0);
+            }
+
+            if (SHOW_SYMBOL_TABLE && absTree != null) {
+                absTreeFile.createNewFile();
+                symbolTableFile.createNewFile();
+                System.out.println("The symbol table is:");
+                SemanticAnalyzer analyzer = new SemanticAnalyzer();
+                absTree.accept(analyzer, 0);
             }
         } catch (Exception e) {
             /* do cleanup here -- possibly rethrow e */

@@ -1,0 +1,19 @@
+Entering global scope
+    Entering the scope of function: gcd
+        Entering a new block: 
+        Leaving the block 
+        u: int
+        v: int
+    Leaving the scope of function
+    Entering the scope of function: main
+        Entering a new block: 
+            x: int
+            y: int
+        Leaving the block 
+        : void
+    Leaving the scope of function
+    output: void
+    input: int
+    gcd: int
+    main: void
+Leaving global scope
