@@ -1,5 +1,11 @@
 package absyn;
 
+import absyn.Decs.*;
+import absyn.Exps.*;
+import absyn.Lists.*;
+import absyn.VarDecs.*;
+import absyn.Vars.*;
+
 public interface AbsynVisitor {
     public void visit(NameTy ty, int level);
 

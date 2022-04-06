@@ -1,4 +1,6 @@
-package absyn;
+package absyn.Exps;
+
+import absyn.AbsynVisitor;
 
 public class OpExp extends Exp {
     public final static int PLUS = 0;

@@ -1,4 +1,8 @@
-package absyn;
+package absyn.Lists;
+
+import absyn.Absyn;
+import absyn.AbsynVisitor;
+import absyn.Decs.Dec;
 
 public class DecList extends Absyn {
     public Dec head;

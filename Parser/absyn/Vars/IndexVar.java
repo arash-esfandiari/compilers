@@ -1,4 +1,7 @@
-package absyn;
+package absyn.Vars;
+
+import absyn.AbsynVisitor;
+import absyn.Exps.Exp;
 
 public class IndexVar extends Var {
     public Exp index;

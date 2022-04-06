@@ -1,4 +1,10 @@
 import absyn.*;
+import absyn.Decs.*;
+import absyn.Exps.*;
+import absyn.Lists.*;
+import absyn.VarDecs.*;
+import absyn.Vars.*;
+
 import java.io.FileWriter;
 import java.io.IOException;
 

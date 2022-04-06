@@ -1,4 +1,10 @@
 import absyn.*;
+import absyn.Decs.*;
+import absyn.Exps.*;
+import absyn.Lists.*;
+import absyn.VarDecs.*;
+import absyn.Vars.*;
+
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -292,11 +298,12 @@ public class SemanticAnalyzer implements AbsynVisitor {
         NodeType alreadyExists = lookup(simpleDec.name);
 
         if (alreadyExists != null && alreadyExists.level == level - 1)
-            System.err.println("Invalid declaration of '" + simpleDec.name + "'. variable already declared");
+            System.err.println("Invalid redeclaration of variable '" + simpleDec.name + "' line: " + simpleDec.row
+                    + " column: " + simpleDec.col);
         if (!isInteger(nodeType.def))
             System.err.println(
-                    "Invalid declaration of void '" + simpleDec.name
-                            + "'. void variable does not semantically make sense.");
+                    "Invalid declaration of void variable '" + simpleDec.name
+                            + "' at line: " + simpleDec.row + " column: " + simpleDec.col);
 
         insert(nodeType);
     }

@@ -1,4 +1,6 @@
-package absyn;
+package absyn.Exps;
+
+import absyn.AbsynVisitor;
 
 public class WhileExp extends Exp {
 

@@ -1,4 +1,7 @@
-package absyn;
+package absyn.VarDecs;
+
+import absyn.AbsynVisitor;
+import absyn.NameTy;
 
 public class SimpleDec extends VarDec {
 

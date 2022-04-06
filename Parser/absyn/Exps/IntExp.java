@@ -1,4 +1,6 @@
-package absyn;
+package absyn.Exps;
+
+import absyn.AbsynVisitor;
 
 public class IntExp extends Exp {
     public int value;

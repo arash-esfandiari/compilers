@@ -1,4 +1,6 @@
-package absyn;
+package absyn.Exps;
+
+import absyn.AbsynVisitor;
 
 public class NilExp extends Exp {
     public NilExp(int row, int col) {

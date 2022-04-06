@@ -1,4 +1,9 @@
-package absyn;
+package absyn.Decs;
+
+import absyn.AbsynVisitor;
+import absyn.NameTy;
+import absyn.Exps.CompoundExp;
+import absyn.Lists.VarDecList;
 
 public class FunctionDec extends Dec {
     public String func;

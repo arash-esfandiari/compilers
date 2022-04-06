@@ -1,4 +1,8 @@
-package absyn;
+package absyn.Lists;
+
+import absyn.Absyn;
+import absyn.AbsynVisitor;
+import absyn.VarDecs.VarDec;
 
 public class VarDecList extends Absyn {
     public VarDec head;

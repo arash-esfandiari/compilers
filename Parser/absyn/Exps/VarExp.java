@@ -1,4 +1,7 @@
-package absyn;
+package absyn.Exps;
+
+import absyn.AbsynVisitor;
+import absyn.Vars.Var;
 
 public class VarExp extends Exp {
     public Var variable;

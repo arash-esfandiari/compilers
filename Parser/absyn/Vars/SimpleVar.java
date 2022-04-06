@@ -1,4 +1,6 @@
-package absyn;
+package absyn.Vars;
+
+import absyn.AbsynVisitor;
 
 public class SimpleVar extends Var {
 

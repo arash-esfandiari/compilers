@@ -13,6 +13,11 @@
 
 import java.io.*;
 import absyn.*;
+import absyn.Decs.*;
+import absyn.Exps.*;
+import absyn.Lists.*;
+import absyn.VarDecs.*;
+import absyn.Vars.*;
 import java.io.File;
 
 class CM {
@@ -39,7 +44,10 @@ class CM {
                     SHOW_TREE = true;
                 } else if (arg.equals("-s")) {
                     SHOW_SYMBOL_TABLE = true;
+                    SHOW_TREE = true;
                 } else if (arg.equals("-c")) {
+                    SHOW_SYMBOL_TABLE = true;
+                    SHOW_TREE = true;
                     GENERATE_CODE = true;
                 }
             /* Build syntax tree */
@@ -54,10 +62,11 @@ class CM {
             }
             /* Perform semantic analysis and save symbolTree */
             if (SHOW_SYMBOL_TABLE && absTree != null) {
-                absTreeFile.createNewFile();
                 symbolTableFile.createNewFile();
                 SemanticAnalyzer analyzer = new SemanticAnalyzer();
                 absTree.accept(analyzer, 0);
+            }
+            if (GENERATE_CODE && absTree != null) {
             }
         } catch (Exception e) {
             /* do cleanup here -- possibly rethrow e */

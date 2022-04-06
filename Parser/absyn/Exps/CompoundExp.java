@@ -1,4 +1,8 @@
-package absyn;
+package absyn.Exps;
+
+import absyn.AbsynVisitor;
+import absyn.Lists.ExpList;
+import absyn.Lists.VarDecList;
 
 public class CompoundExp extends Exp {
 

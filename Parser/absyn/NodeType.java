@@ -1,5 +1,7 @@
 package absyn;
 
+import absyn.Decs.Dec;
+
 public class NodeType {
     public String name;
     public Dec def;

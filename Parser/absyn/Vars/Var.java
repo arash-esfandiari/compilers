@@ -1,4 +1,6 @@
-package absyn;
+package absyn.Vars;
+
+import absyn.Absyn;
 
 abstract public class Var extends Absyn {
     public String name;

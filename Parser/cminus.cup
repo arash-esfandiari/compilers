@@ -10,6 +10,11 @@
 /* Import the class java_cup.runtime.*  */
 //import java_cup.runtime.*;
 import absyn.*;
+import absyn.Decs.*;
+import absyn.Exps.*;
+import absyn.Lists.*;
+import absyn.VarDecs.*;
+import absyn.Vars.*;
    
 /* Parser code to change the way the parser reports errors (include
    line and column number of the error). */

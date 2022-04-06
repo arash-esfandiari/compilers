@@ -1,4 +1,7 @@
-package absyn;
+package absyn.VarDecs;
+
+import absyn.NameTy;
+import absyn.Decs.Dec;
 
 abstract public class VarDec extends Dec {
     public String name;
