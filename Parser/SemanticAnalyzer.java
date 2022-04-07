@@ -13,19 +13,18 @@ import java.util.HashMap;
 public class SemanticAnalyzer implements AbsynVisitor {
 
     final static int SPACES = 4;
+    public String codeName;
     public HashMap<String, ArrayList<NodeType>> table;
 
-    public SemanticAnalyzer() {
+    public SemanticAnalyzer(String codeName) {
         table = new HashMap<String, ArrayList<NodeType>>();
+        this.codeName = codeName;
     }
 
-    private void writeToFile(String string, boolean nextLine) {
+    private void writeToFile(String string) {
         try {
-            FileWriter myWriter = new FileWriter("symbolTable.sym", true);
-            if (nextLine) {
-                myWriter.write(string + "\n");
-            } else
-                myWriter.write(string);
+            FileWriter myWriter = new FileWriter(codeName + ".sym", true);
+            myWriter.write(string);
             myWriter.close();
         } catch (IOException e) {
             System.out.println("FileWriter unsuccessful");
@@ -35,7 +34,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
 
     private void indent(int level) {
         for (int i = 0; i < level * SPACES; i++)
-            writeToFile(" ", false);
+            writeToFile(" ");
     }
 
     public boolean isInteger(Dec dtype) {
@@ -96,7 +95,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
                     } else
                         type = "void";
                     indent(level + 1);
-                    writeToFile(nType.name + ": " + type, true);
+                    writeToFile(nType.name + ": " + type + "\n");
                     list.remove(i);
                 }
             }
@@ -104,14 +103,14 @@ public class SemanticAnalyzer implements AbsynVisitor {
     }
 
     /******************************** visitors ********************************/
-    public void visit(NameTy exp, int level) {
+    public void visit(NameTy exp, int level, boolean isAddress) {
 
     }
     /* Lists */
 
-    public void visit(DecList decList, int level) {
+    public void visit(DecList decList, int level, boolean isAddress) {
         indent(level);
-        writeToFile("Entering global scope", true);
+        writeToFile("Entering global scope\n");
         // Input function
         VarDecList inputParameters = new VarDecList(null, null);
         CompoundExp inputCompundtreeNode = new CompoundExp(0, 0, null, null);
@@ -127,35 +126,35 @@ public class SemanticAnalyzer implements AbsynVisitor {
         insert(outputNode);
         while (decList != null) {
             if (decList.head != null) {
-                decList.head.accept(this, level + 1);
+                decList.head.accept(this, level + 1, false);
             }
             decList = decList.tail;
         }
         delete(level);
         indent(level);
-        writeToFile("Leaving global scope", true);
+        writeToFile("Leaving global scope\n");
     }
 
-    public void visit(VarDecList varDecList, int level) {
+    public void visit(VarDecList varDecList, int level, boolean isAddress) {
         while (varDecList != null) {
             if (varDecList.head != null) {
-                varDecList.head.accept(this, level);
+                varDecList.head.accept(this, level, false);
             }
             varDecList = varDecList.tail;
         }
     }
 
-    public void visit(ExpList expList, int level) {
+    public void visit(ExpList expList, int level, boolean isAddress) {
         while (expList != null) {
             if (expList.head != null) {
-                expList.head.accept(this, level);
+                expList.head.accept(this, level, false);
             }
             expList = expList.tail;
         }
     }
 
     /* Vars */
-    public void visit(SimpleVar simpleVar, int level) {
+    public void visit(SimpleVar simpleVar, int level, boolean isAddress) {
         if (lookup(simpleVar.name) == null) {
             System.err.println("Invalid use of undeclared variable '" + simpleVar.name +
                     "'' at: " + simpleVar.row
@@ -163,8 +162,8 @@ public class SemanticAnalyzer implements AbsynVisitor {
         }
     }
 
-    public void visit(IndexVar indexVar, int level) {
-        indexVar.index.accept(this, level + 1);
+    public void visit(IndexVar indexVar, int level, boolean isAddress) {
+        indexVar.index.accept(this, level + 1, false);
         if (lookup(indexVar.name) == null) {
             System.err.println("Invalid use of undeclared variable '" + indexVar.name +
                     "'' at: " + indexVar.row
@@ -173,26 +172,26 @@ public class SemanticAnalyzer implements AbsynVisitor {
     }
 
     /* Expressions */
-    public void visit(NilExp exp, int level) {
+    public void visit(NilExp exp, int level, boolean isAddress) {
         exp.dtype = new SimpleDec(exp.row, exp.col, new NameTy(exp.row, exp.col, 0), "NilExpression");
     }
 
-    public void visit(VarExp exp, int level) {
+    public void visit(VarExp exp, int level, boolean isAddress) {
         if (exp.variable != null) {
-            exp.variable.accept(this, level + 1);
+            exp.variable.accept(this, level + 1, false);
         }
         NodeType nodeType = lookup(exp.variable.name);
         if (nodeType != null)
             exp.dtype = nodeType.def;
     }
 
-    public void visit(IntExp exp, int level) {
+    public void visit(IntExp exp, int level, boolean isAddress) {
         exp.dtype = new SimpleDec(exp.row, exp.col, new NameTy(exp.row, exp.col, 1), "IntExpression");
     }
 
-    public void visit(CallExp exp, int level) {
+    public void visit(CallExp exp, int level, boolean isAddress) {
         if (exp.args != null)
-            exp.args.accept(this, level + 1);
+            exp.args.accept(this, level + 1, false);
         NodeType expType = lookup(exp.func);
         if (expType != null) {
             int type = expType.def.typ.typ;
@@ -202,9 +201,9 @@ public class SemanticAnalyzer implements AbsynVisitor {
         }
     }
 
-    public void visit(OpExp exp, int level) {
-        exp.left.accept(this, level + 1);
-        exp.right.accept(this, level + 1);
+    public void visit(OpExp exp, int level, boolean isAddress) {
+        exp.left.accept(this, level + 1, false);
+        exp.right.accept(this, level + 1, false);
 
         if (isInteger(exp.left.dtype) && isInteger(exp.right.dtype)) {
             exp.dtype = exp.left.dtype;
@@ -222,9 +221,9 @@ public class SemanticAnalyzer implements AbsynVisitor {
 
     }
 
-    public void visit(AssignExp exp, int level) {
-        exp.lhs.accept(this, level + 1);
-        exp.rhs.accept(this, level + 1);
+    public void visit(AssignExp exp, int level, boolean isAddress) {
+        exp.lhs.accept(this, level + 1, false);
+        exp.rhs.accept(this, level + 1, false);
 
         if (isInteger(exp.lhs.dtype) && isInteger(exp.rhs.dtype)) {
             exp.dtype = exp.lhs.dtype;
@@ -241,59 +240,59 @@ public class SemanticAnalyzer implements AbsynVisitor {
         }
     }
 
-    public void visit(IfExp exp, int level) {
-        exp.test.accept(this, level);
-        exp.thenpart.accept(this, level);
+    public void visit(IfExp exp, int level, boolean isAddress) {
+        exp.test.accept(this, level, false);
+        exp.thenpart.accept(this, level, false);
         if (exp.elsepart != null)
-            exp.elsepart.accept(this, level);
+            exp.elsepart.accept(this, level, false);
         exp.dtype = new SimpleDec(exp.row, exp.col, new NameTy(exp.row, exp.col, 1), "IfExpression");
         if (isInteger(exp.test.dtype)) {
             System.err.println("Invalid test expression for if statement at line: " + exp.row + " column: " + exp.col);
         }
     }
 
-    public void visit(WhileExp exp, int level) {
+    public void visit(WhileExp exp, int level, boolean isAddress) {
         if (exp.test != null)
-            exp.test.accept(this, level);
+            exp.test.accept(this, level, false);
         if (exp.body != null)
-            exp.body.accept(this, level);
+            exp.body.accept(this, level, false);
     }
 
-    public void visit(ReturnExp exp, int level) {
+    public void visit(ReturnExp exp, int level, boolean isAddress) {
         if (exp.exp != null)
-            exp.exp.accept(this, level + 1);
+            exp.exp.accept(this, level + 1, false);
         exp.dtype = exp.exp.dtype;
     }
 
-    public void visit(CompoundExp exp, int level) {
+    public void visit(CompoundExp exp, int level, boolean isAddress) {
         indent(level);
-        writeToFile("Entering a new block: ", true);
+        writeToFile("Entering a new block: \n");
         if (exp.decs != null)
-            exp.decs.accept(this, level + 1);
+            exp.decs.accept(this, level + 1, false);
         if (exp.exps != null)
-            exp.exps.accept(this, level + 1);
+            exp.exps.accept(this, level + 1, false);
         delete(level);
         indent(level);
-        writeToFile("Leaving the block ", true);
+        writeToFile("Leaving the block \n");
     }
 
     /* Declarations */
-    public void visit(FunctionDec funcDec, int level) {
+    public void visit(FunctionDec funcDec, int level, boolean isAddress) {
         insert(new NodeType(funcDec.func, funcDec, level - 1));
         indent(level);
-        writeToFile("Entering the scope of function: " + funcDec.func, true);
+        writeToFile("Entering the scope of function: " + funcDec.func + "\n");
         if (funcDec.params != null)
-            funcDec.params.accept(this, level + 1);
+            funcDec.params.accept(this, level + 1, false);
 
         if (funcDec.body != null)
-            funcDec.body.accept(this, level);
+            funcDec.body.accept(this, level, false);
 
         delete(level);
         indent(level);
-        writeToFile("Leaving the scope of function", true);
+        writeToFile("Leaving the scope of function\n");
     }
 
-    public void visit(SimpleDec simpleDec, int level) {
+    public void visit(SimpleDec simpleDec, int level, boolean isAddress) {
         NodeType nodeType = new NodeType(simpleDec.name, simpleDec, level - 1);
         NodeType alreadyExists = lookup(simpleDec.name);
 
@@ -305,10 +304,11 @@ public class SemanticAnalyzer implements AbsynVisitor {
                     "Invalid declaration of void variable '" + simpleDec.name
                             + "' at line: " + simpleDec.row + " column: " + simpleDec.col);
 
+        simpleDec.nestLevel = level;
         insert(nodeType);
     }
 
-    public void visit(ArrayDec arrayDec, int level) {
+    public void visit(ArrayDec arrayDec, int level, boolean isAddress) {
         NodeType nodeType = new NodeType(arrayDec.name, arrayDec, level - 1);
         NodeType alreadyExists = lookup(arrayDec.name);
 
@@ -320,6 +320,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
                     "Invalid declaration of void " + arrayDec.name
                             + "[] void variable does not semantically make sense.");
 
+        arrayDec.nestLevel = level;
         insert(nodeType);
     }
 

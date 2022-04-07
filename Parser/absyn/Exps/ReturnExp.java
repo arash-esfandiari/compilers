@@ -11,7 +11,7 @@ public class ReturnExp extends Exp {
         this.exp = exp;
     }
 
-    public void accept(AbsynVisitor visitor, int level) {
-        visitor.visit(this, level);
+    public void accept(AbsynVisitor visitor, int level, boolean isAddress) {
+        visitor.visit(this, level, isAddress);
     }
 }

@@ -13,11 +13,7 @@
 
 import java.io.*;
 import absyn.*;
-import absyn.Decs.*;
-import absyn.Exps.*;
-import absyn.Lists.*;
-import absyn.VarDecs.*;
-import absyn.Vars.*;
+
 import java.io.File;
 
 class CM {
@@ -27,16 +23,26 @@ class CM {
 
     static public void main(String argv[]) {
         /* Start the parser */
-        String codeName;
-        int firstIndex = argv[1].indexOf(".");
-        if (firstIndex != -1) {
-            codeName = argv[1].substring(0, firstIndex); // this will give abc
+        String codeName = "";
+        if (argv.length > 0) {
+            int firstIndex = argv[0].lastIndexOf(".");
+            int lastIndex = argv[0].lastIndexOf("/");
+            if (firstIndex != -1 && lastIndex != -1) {
+                codeName = argv[0].substring(lastIndex + 1, firstIndex);
+            } else if (firstIndex != -1) {
+                codeName = argv[0].substring(0, firstIndex);
+            } else {
+                System.out.println("Please enter program name");
+            }
         }
-        /* Create Tree files */
-        File absTreeFile = new File("syntaxTree.abs");
-        File symbolTableFile = new File("symbolTable.sym");
-        absTreeFile.delete();
-        symbolTableFile.delete();
+
+        /* Create text files */
+        File absTreeFile = new File(codeName + ".abs");
+        File symbolTableFile = new File(codeName + ".sym");
+        File machineCodeFile = new File(codeName + ".tm");
+        // absTreeFile.delete();
+        // symbolTableFile.delete();
+        // machineCodeFile.delete();
         /* Determine flag */
         try {
             for (String arg : argv)
@@ -55,18 +61,20 @@ class CM {
             Absyn absTree = (Absyn) (p.parse().value);
 
             /* Save abs tree to syntaxTree.abs */
-            if ((SHOW_TREE || SHOW_SYMBOL_TABLE) && absTree != null) {
+            if (SHOW_TREE && absTree != null) {
                 absTreeFile.createNewFile();
-                ShowTreeVisitor visitor = new ShowTreeVisitor();
-                absTree.accept(visitor, 0);
+                ShowTreeVisitor visitor = new ShowTreeVisitor(codeName);
+                absTree.accept(visitor, 0, false);
             }
             /* Perform semantic analysis and save symbolTree */
             if (SHOW_SYMBOL_TABLE && absTree != null) {
                 symbolTableFile.createNewFile();
-                SemanticAnalyzer analyzer = new SemanticAnalyzer();
-                absTree.accept(analyzer, 0);
+                SemanticAnalyzer analyzer = new SemanticAnalyzer(codeName);
+                absTree.accept(analyzer, 0, false);
             }
             if (GENERATE_CODE && absTree != null) {
+                machineCodeFile.createNewFile();
+                // CodeGenerator generator = new CodeGenerator(codeName);
             }
         } catch (Exception e) {
             /* do cleanup here -- possibly rethrow e */

@@ -21,5 +21,5 @@ parser.java: cminus.cup
 	$(CUP) -expect 3 cminus.cup
 
 clean:
-	rm -f symbolTable.sym syntaxTree.abs parser.java Lexer.java sym.java *.class absyn/*.class absyn/Decs/*.class absyn/Exps/*.class absyn/Lists/*.class absyn/Vars/*.class absyn/VarDecs/*.class *~
+	rm -f *.tm *.sym *.abs parser.java Lexer.java sym.java *.class absyn/*.class absyn/Decs/*.class absyn/Exps/*.class absyn/Lists/*.class absyn/Vars/*.class absyn/VarDecs/*.class *~
 

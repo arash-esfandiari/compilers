@@ -11,14 +11,16 @@ import java.io.IOException;
 public class ShowTreeVisitor implements AbsynVisitor {
 
     final static int SPACES = 4;
+    public String codeName;
 
-    private void writeToFile(String string, boolean nextLine) {
+    public ShowTreeVisitor(String codeName) {
+        this.codeName = codeName;
+    }
+
+    private void writeToFile(String string) {
         try {
-            FileWriter myWriter = new FileWriter("syntaxTree.abs", true);
-            if (nextLine) {
-                myWriter.write(string + "\n");
-            } else
-                myWriter.write(string);
+            FileWriter myWriter = new FileWriter(codeName + ".abs", true);
+            myWriter.write(string);
             myWriter.close();
         } catch (IOException e) {
             System.out.println("FileWriter unsuccessful");
@@ -28,178 +30,178 @@ public class ShowTreeVisitor implements AbsynVisitor {
 
     private void indent(int level) {
         for (int i = 0; i < level * SPACES; i++)
-            writeToFile(" ", false);
+            writeToFile(" ");
     }
 
-    public void visit(NameTy exp, int level) {
+    public void visit(NameTy exp, int level, boolean isAddress) {
         if (exp.typ == 0) {
-            writeToFile("VOID", true);
+            writeToFile("VOID\n");
         }
         if (exp.typ == 0) {
-            writeToFile("INT", true);
+            writeToFile("INT\n");
         }
     }
 
     /* Vars */
-    public void visit(SimpleVar exp, int level) {
+    public void visit(SimpleVar exp, int level, boolean isAddress) {
         indent(level);
-        writeToFile("SimpleVar: " + exp.name, true);
+        writeToFile("SimpleVar: " + exp.name + "\n");
     }
 
-    public void visit(IndexVar exp, int level) {
+    public void visit(IndexVar exp, int level, boolean isAddress) {
         indent(level);
-        writeToFile("IndexVar: " + exp.name, true);
+        writeToFile("IndexVar: " + exp.name + "\n");
         level++;
-        exp.index.accept(this, level);
+        exp.index.accept(this, level, false);
     }
 
     /* Expressions */
-    public void visit(NilExp exp, int level) {
+    public void visit(NilExp exp, int level, boolean isAddress) {
         indent(level);
-        writeToFile("NilExp:", true);
+        writeToFile("NilExp:\n");
     }
 
-    public void visit(VarExp exp, int level) {
+    public void visit(VarExp exp, int level, boolean isAddress) {
         indent(level);
-        writeToFile("VarExp: ", true);
+        writeToFile("VarExp: \n");
         level++;
 
         if (exp.variable != null) {
-            exp.variable.accept(this, level);
+            exp.variable.accept(this, level, false);
         }
     }
 
-    public void visit(IntExp exp, int level) {
+    public void visit(IntExp exp, int level, boolean isAddress) {
         indent(level);
-        writeToFile("IntExp: " + exp.value, true);
+        writeToFile("IntExp: " + exp.value + "\n");
     }
 
-    public void visit(CallExp exp, int level) {
+    public void visit(CallExp exp, int level, boolean isAddress) {
         indent(level);
-        writeToFile("CallExp: " + exp.func, true);
+        writeToFile("CallExp: " + exp.func + "\n");
         level++;
         if (exp.args != null)
-            exp.args.accept(this, level);
+            exp.args.accept(this, level, false);
     }
 
-    public void visit(OpExp exp, int level) {
+    public void visit(OpExp exp, int level, boolean isAddress) {
         indent(level);
-        writeToFile("OpExp:", false);
+        writeToFile("OpExp:");
         switch (exp.op) {
             case OpExp.PLUS:
-                writeToFile(" + ", true);
+                writeToFile(" + \n");
                 break;
             case OpExp.MINUS:
-                writeToFile(" - ", true);
+                writeToFile(" - \n");
                 break;
             case OpExp.TIMES:
-                writeToFile(" * ", true);
+                writeToFile(" * \n");
                 break;
             case OpExp.DIV:
-                writeToFile(" / ", true);
+                writeToFile(" / \n");
                 break;
             case OpExp.EQ:
-                writeToFile(" == ", true);
+                writeToFile(" == \n");
                 break;
             case OpExp.NEQ:
-                writeToFile(" != ", true);
+                writeToFile(" != \n");
                 break;
             case OpExp.LT:
-                writeToFile(" < ", true);
+                writeToFile(" < \n");
                 break;
             case OpExp.LTEQ:
-                writeToFile(" <= ", true);
+                writeToFile(" <= \n");
                 break;
             case OpExp.GT:
-                writeToFile(" > ", true);
+                writeToFile(" > \n");
                 break;
             case OpExp.GTEQ:
-                writeToFile(" >= ", true);
+                writeToFile(" >= \n");
                 break;
             default:
-                writeToFile("Invalid operator at line " + exp.row + " and column " + exp.col, true);
+                writeToFile("Invalid operator at line " + exp.row + " and column " + exp.col + "\n");
         }
         level++;
-        exp.left.accept(this, level);
-        exp.right.accept(this, level);
+        exp.left.accept(this, level, false);
+        exp.right.accept(this, level, false);
     }
 
-    public void visit(AssignExp exp, int level) {
+    public void visit(AssignExp exp, int level, boolean isAddress) {
         indent(level);
-        writeToFile("AssignExp:", true);
+        writeToFile("AssignExp:\n");
         level++;
-        exp.lhs.accept(this, level);
-        exp.rhs.accept(this, level);
+        exp.lhs.accept(this, level, false);
+        exp.rhs.accept(this, level, false);
     }
 
-    public void visit(IfExp exp, int level) {
+    public void visit(IfExp exp, int level, boolean isAddress) {
         indent(level);
-        writeToFile("IfExp:", true);
+        writeToFile("IfExp:\n");
         level++;
-        exp.test.accept(this, level);
-        exp.thenpart.accept(this, level);
+        exp.test.accept(this, level, false);
+        exp.thenpart.accept(this, level, false);
         if (exp.elsepart != null)
-            exp.elsepart.accept(this, level);
+            exp.elsepart.accept(this, level, false);
     }
 
-    public void visit(WhileExp exp, int level) {
+    public void visit(WhileExp exp, int level, boolean isAddress) {
         indent(level);
-        writeToFile("WhileExp: ", true);
+        writeToFile("WhileExp:\n");
         level++;
         if (exp.test != null)
-            exp.test.accept(this, level);
+            exp.test.accept(this, level, false);
         if (exp.body != null)
-            exp.body.accept(this, level);
+            exp.body.accept(this, level, false);
     }
 
-    public void visit(ReturnExp exp, int level) {
+    public void visit(ReturnExp exp, int level, boolean isAddress) {
         indent(level);
-        writeToFile("ReturnExp: ", true);
+        writeToFile("ReturnExp:\n");
         level++;
 
         if (exp.exp != null)
-            exp.exp.accept(this, level);
+            exp.exp.accept(this, level, false);
     }
 
-    public void visit(CompoundExp exp, int level) {
+    public void visit(CompoundExp exp, int level, boolean isAddress) {
         indent(level);
-        writeToFile("CompoundExp: ", true);
+        writeToFile("CompoundExp:\n");
 
         if (exp.decs != null && exp.exps != null)
             level++;
 
         if (exp.decs != null)
-            exp.decs.accept(this, level);
+            exp.decs.accept(this, level, false);
         if (exp.exps != null)
-            exp.exps.accept(this, level);
+            exp.exps.accept(this, level, false);
     }
 
     /* Declarations */
-    public void visit(FunctionDec exp, int level) {
+    public void visit(FunctionDec exp, int level, boolean isAddress) {
         indent(level);
         if (exp.typ.typ == NameTy.VOID)
-            writeToFile("FunctionDec: " + exp.func + " VOID", true);
+            writeToFile("FunctionDec: " + exp.func + " VOID" + "\n");
         else if (exp.typ.typ == NameTy.INT)
-            writeToFile("FunctionDec: " + exp.func + " INT", true);
+            writeToFile("FunctionDec: " + exp.func + " INT" + "\n");
 
         level++;
 
         if (exp.params != null)
-            exp.params.accept(this, level);
+            exp.params.accept(this, level, false);
 
         if (exp.body != null)
-            exp.body.accept(this, level);
+            exp.body.accept(this, level, false);
     }
 
-    public void visit(SimpleDec exp, int level) {
+    public void visit(SimpleDec exp, int level, boolean isAddress) {
         indent(level);
         if (exp.typ.typ == NameTy.VOID)
-            writeToFile("SimpleDec: " + exp.name + " VOID", true);
+            writeToFile("SimpleDec: " + exp.name + " VOID" + "\n");
         else if (exp.typ.typ == NameTy.INT)
-            writeToFile("SimpleDec: " + exp.name + " INT", true);
+            writeToFile("SimpleDec: " + exp.name + " INT" + "\n");
     }
 
-    public void visit(ArrayDec exp, int level) {
+    public void visit(ArrayDec exp, int level, boolean isAddress) {
         indent(level);
         String ty = new String("");
 
@@ -210,34 +212,34 @@ public class ShowTreeVisitor implements AbsynVisitor {
         }
 
         if (exp.size != null) {
-            writeToFile("ArrayDec: " + exp.name + "[" + exp.size.value + "]" + " - " + ty, true);
+            writeToFile("ArrayDec: " + exp.name + "[" + exp.size.value + "]" + " - " + ty + "\n");
         } else
-            writeToFile("ArrayDec: " + exp.name + "[]" + " - " + ty, true);
+            writeToFile("ArrayDec: " + exp.name + "[]" + " - " + ty + "\n");
     }
 
     /* Lists */
-    public void visit(DecList decList, int level) {
+    public void visit(DecList decList, int level, boolean isAddress) {
         while (decList != null) {
             if (decList.head != null) {
-                decList.head.accept(this, level);
+                decList.head.accept(this, level, false);
             }
             decList = decList.tail;
         }
     }
 
-    public void visit(VarDecList varDecList, int level) {
+    public void visit(VarDecList varDecList, int level, boolean isAddress) {
         while (varDecList != null) {
             if (varDecList.head != null) {
-                varDecList.head.accept(this, level);
+                varDecList.head.accept(this, level, false);
             }
             varDecList = varDecList.tail;
         }
     }
 
-    public void visit(ExpList expList, int level) {
+    public void visit(ExpList expList, int level, boolean isAddress) {
         while (expList != null) {
             if (expList.head != null) {
-                expList.head.accept(this, level);
+                expList.head.accept(this, level, false);
             }
             expList = expList.tail;
         }
