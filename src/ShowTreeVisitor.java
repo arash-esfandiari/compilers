@@ -19,7 +19,7 @@ public class ShowTreeVisitor implements AbsynVisitor {
 
     private void writeToFile(String string) {
         try {
-            FileWriter myWriter = new FileWriter(codeName + ".abs", true);
+            FileWriter myWriter = new FileWriter("Output" + "/" + codeName + ".abs", true);
             myWriter.write(string);
             myWriter.close();
         } catch (IOException e) {

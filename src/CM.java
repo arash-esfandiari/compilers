@@ -24,6 +24,7 @@ class CM {
     static public void main(String argv[]) {
         /* Start the parser */
         String codeName = "";
+        String dir = "Output";
         if (argv.length > 0) {
             int firstIndex = argv[0].lastIndexOf(".");
             int lastIndex = argv[0].lastIndexOf("/");
@@ -37,12 +38,14 @@ class CM {
         }
 
         /* Create text files */
-        File absTreeFile = new File(codeName + ".abs");
-        File symbolTableFile = new File(codeName + ".sym");
-        File machineCodeFile = new File(codeName + ".tm");
-        // absTreeFile.delete();
-        // symbolTableFile.delete();
-        // machineCodeFile.delete();
+        File directory = new File(dir);
+        File absTreeFile = new File(directory + "/" + codeName + ".abs");
+        File symbolTableFile = new File(directory + "/" + codeName + ".sym");
+        File machineCodeFile = new File(directory + "/" + codeName + ".tm");
+        directory.mkdir();
+        absTreeFile.delete();
+        symbolTableFile.delete();
+        machineCodeFile.delete();
         /* Determine flag */
         try {
             for (String arg : argv)
@@ -74,7 +77,8 @@ class CM {
             }
             if (GENERATE_CODE && absTree != null) {
                 machineCodeFile.createNewFile();
-                // CodeGenerator generator = new CodeGenerator(codeName);
+                CodeGenerator generator = new CodeGenerator(codeName);
+                generator.accept(absTree);
             }
         } catch (Exception e) {
             /* do cleanup here -- possibly rethrow e */

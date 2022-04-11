@@ -23,7 +23,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
 
     private void writeToFile(String string) {
         try {
-            FileWriter myWriter = new FileWriter(codeName + ".sym", true);
+            FileWriter myWriter = new FileWriter("Output" + "/" + codeName + ".sym", true);
             myWriter.write(string);
             myWriter.close();
         } catch (IOException e) {
