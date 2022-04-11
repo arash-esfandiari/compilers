@@ -63,6 +63,8 @@ class CM {
             /* Build syntax tree */
             parser p = new parser(new Lexer(new FileReader(argv[0])));
             Absyn absTree = (Absyn) (p.parse().value);
+            SemanticAnalyzer analyzer = null;
+            CodeGenerator generator;
 
             /* Save abs tree to syntaxTree.abs */
             if (SHOW_TREE && absTree != null) {
@@ -73,12 +75,12 @@ class CM {
             /* Perform semantic analysis and save symbolTree */
             if (SHOW_SYMBOL_TABLE && absTree != null) {
                 symbolTableFile.createNewFile();
-                SemanticAnalyzer analyzer = new SemanticAnalyzer(codeName);
+                analyzer = new SemanticAnalyzer(codeName);
                 absTree.accept(analyzer, 0, false);
             }
             if (GENERATE_CODE && absTree != null) {
                 machineCodeFile.createNewFile();
-                CodeGenerator generator = new CodeGenerator(codeName);
+                generator = new CodeGenerator(codeName);
                 generator.visit((DecList) absTree);
             }
         } catch (Exception e) {

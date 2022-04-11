@@ -14,10 +14,10 @@ public class SemanticAnalyzer implements AbsynVisitor {
 
     final static int SPACES = 4;
     public String codeName;
-    public HashMap<String, ArrayList<NodeType>> table;
+    public HashMap<String, ArrayList<NodeType>> symTable;
 
     public SemanticAnalyzer(String codeName) {
-        table = new HashMap<String, ArrayList<NodeType>>();
+        symTable = new HashMap<String, ArrayList<NodeType>>();
         this.codeName = codeName;
     }
 
@@ -45,30 +45,30 @@ public class SemanticAnalyzer implements AbsynVisitor {
     }
 
     /*
-     * Function: Inserts NodeType in the table HashMap ArrayList
+     * Function: Inserts NodeType in the symTable HashMap ArrayList
      * Param: NodeType to be intsered
      * returns: void
      */
     public void insert(NodeType nType) {
-        if (table.containsKey(nType.name)) {
-            ArrayList<NodeType> list = table.get(nType.name);
+        if (symTable.containsKey(nType.name)) {
+            ArrayList<NodeType> list = symTable.get(nType.name);
             list.add(nType);
         } else {
             ArrayList<NodeType> list = new ArrayList<NodeType>();
             list.add(nType);
-            table.put(nType.name, list);
+            symTable.put(nType.name, list);
         }
     }
 
     /*
-     * Function: Look up the type of declaration if exists in the HashMap table
+     * Function: Look up the type of declaration if exists in the HashMap symTable
      * loopup definition for name
      * Param: NodeType to be looked up
      * Return: Returns NodeType of if it exists, null otherwise
      */
     public NodeType lookup(String name) {
-        if (table.containsKey(name)) {
-            ArrayList<NodeType> list = table.get(name);
+        if (symTable.containsKey(name)) {
+            ArrayList<NodeType> list = symTable.get(name);
             for (int i = 0; i < list.size(); i++) {
                 if (list.get(i).name.equals(name)) {
                     return list.get(i);
@@ -79,13 +79,13 @@ public class SemanticAnalyzer implements AbsynVisitor {
     }
 
     /*
-     * Function: Delete NodeType from list in the HashMap table
+     * Function: Delete NodeType from list in the HashMap symTable
      * Param: Level to be deleted
      * Return: void
      */
     public void delete(int level) {
-        for (String key : table.keySet()) {
-            ArrayList<NodeType> list = table.get(key);
+        for (String key : symTable.keySet()) {
+            ArrayList<NodeType> list = symTable.get(key);
             for (int i = 0; i < list.size(); i++) {
                 NodeType nType = list.get(i);
                 if (nType.level == level) {
