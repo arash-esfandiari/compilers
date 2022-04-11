@@ -136,7 +136,7 @@ public class CodeGenerator implements AbsynVisitor {
         emitRestore();
         emitComment("End of prelude");
         visit(decList, 0, false);
-        if (mainEntry != 0) {
+        if (mainEntry == 0) {
             System.out.println("Main function does not exist!");
         }
         // Finale
