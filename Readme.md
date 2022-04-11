@@ -1,12 +1,11 @@
 # C- Compiler
 
-### Setting
-CIS*4650, Compilers, University of Guelph, Winter 2022 
-## Program Authors 
+## Authors 
 - Arash Esfandiari 
 - Josh McCaskil
-Course: CIS*4650, Compilers, University of Guelph
-
+### Course 
+- CIS*4650, Compilers, University of Guelph 
+- Winter 2022 
 ## Description:
 
 The goal of this project is to create a new programming language called "C-" or "CMINUS". "C-" is very similar to "C", but has far less many features. To write your own programming language is to write a compiler for with specified set of grammar rules, parse the program based on those rules, and generate the required assembly code.  
