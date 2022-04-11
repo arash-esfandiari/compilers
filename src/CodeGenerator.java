@@ -200,26 +200,21 @@ public class CodeGenerator implements AbsynVisitor {
         if (exp.variable != null) {
             exp.variable.accept(this, offset, false);
         }
-        writeToFile("VarExp: ");
+
     }
 
     public void visit(IntExp exp, int offset, boolean isAddress) {
-        indent(level);
-        writeToFile("IntExp: " + exp.value);
     }
 
-    public void visit(CallExp exp, int o, boolean isAddress) {
-        indent(level);
-        writeToFile("CallExp: " + exp.func, true);
-        level++;
+    public void visit(CallExp exp, int offset, boolean isAddress) {
         if (exp.args != null)
-            exp.args.accept(this, level);
+            exp.args.accept(this, offset, false);
     }
 
-    public void visit(OpExp exp, int level, boolean isAddress) {
+    public void visit(OpExp exp, int offset, boolean isAddress) {
 
-        exp.left.accept(this, level, false);
-        exp.right.accept(this, level, false);
+        exp.left.accept(this, offset, false);
+        exp.right.accept(this, offset, false);
     }
 
     public void visit(AssignExp exp, int level, boolean isAddress) {
@@ -252,10 +247,9 @@ public class CodeGenerator implements AbsynVisitor {
     public void visit(CompoundExp exp, int level, boolean isAddress) {
 
         if (exp.decs != null && exp.exps != null)
-            level++;
 
-        if (exp.decs != null)
-            exp.decs.accept(this, level, false);
+            if (exp.decs != null)
+                exp.decs.accept(this, level, false);
         if (exp.exps != null)
             exp.exps.accept(this, level, false);
     }

@@ -246,7 +246,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
         if (exp.elsepart != null)
             exp.elsepart.accept(this, level, false);
         exp.dtype = new SimpleDec(exp.row, exp.col, new NameTy(exp.row, exp.col, 1), "IfExpression");
-        if (isInteger(exp.test.dtype)) {
+        if (!isInteger(exp.test.dtype)) {
             System.err.println("Invalid test expression for if statement at line: " + exp.row + " column: " + exp.col);
         }
     }

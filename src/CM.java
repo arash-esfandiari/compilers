@@ -13,6 +13,7 @@
 
 import java.io.*;
 import absyn.*;
+import absyn.Lists.DecList;
 
 import java.io.File;
 
@@ -78,7 +79,7 @@ class CM {
             if (GENERATE_CODE && absTree != null) {
                 machineCodeFile.createNewFile();
                 CodeGenerator generator = new CodeGenerator(codeName);
-                generator.accept(absTree);
+                generator.visit((DecList) absTree);
             }
         } catch (Exception e) {
             /* do cleanup here -- possibly rethrow e */
