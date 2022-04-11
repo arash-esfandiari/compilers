@@ -15,7 +15,7 @@ This program is created with under the supervision and help of professor "Fei So
 
 Makefile in the in the "src" folder contains all commands required to build the program. cd to src, type "$build" to build the program. 
 To Generate the required file including Anotated Tree, Symbol Table, and Assembly Code for fac.cm (short for c minus) type: 
-    java -cp ../java-cup-11b.jar:. CM ../TestFiles/fac.cm -c
+    'java -cp ../java-cup-11b.jar:. CM ../TestFiles/fac.cm -c'
 
 Flags: 
 -a: creates only the syntax tree file.
