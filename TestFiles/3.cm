@@ -1,16 +1,19 @@
+/* 
+    3.cm
+    A program to perform Euclid's algorithm to compute a gcd
 
+    No Errors Present
+*/
+
+int gcd(int u, int v) {
+  if (v == 0) return u;
+  else return gcd(v, u - u/v*v);
+}
 
 void main(void) {
-    int x;
-    x = 2;
-
-    x = 5;
-    while (x >> 1) {
-        x = 2;
-    } 
-
-    if (x << 10){
-        x = 3;
-    }
-
+  int x; int y;
+  int y;
+  x = input();
+  y = input();
+  output(gcd(x, y));
 }

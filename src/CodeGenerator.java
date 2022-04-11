@@ -192,17 +192,17 @@ public class CodeGenerator implements AbsynVisitor {
     }
 
     /* Vars */
-    public void visit(SimpleVar var, int offset, boolean isAddress) {
+    public void visit(SimpleVar v, int offset, boolean isAddress) {
         // Retrieve function address
         SimpleDec dec;
-        dec = (SimpleDec) map.get(var.name);
+        dec = (SimpleDec) map.get(v.name);
     }
 
-    public void visit(IndexVar var, int offset, boolean isAddress) {
+    public void visit(IndexVar v, int offset, boolean isAddress) {
         ArrayDec dec;
-        dec = (ArrayDec) map.get(var.name);
+        dec = (ArrayDec) map.get(v.name);
 
-        var.index.accept(this, offset, isAddress);
+        v.index.accept(this, offset, isAddress);
         // String temp = newtemp();
         // codestr += temp + “ = ” + tree.index.temp + “ * elem_size(” +tree.name + “)”;
         // emitCode( codestr );

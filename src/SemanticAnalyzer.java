@@ -37,8 +37,14 @@ public class SemanticAnalyzer implements AbsynVisitor {
             writeToFile(" ");
     }
 
-    public boolean isInteger(Dec dtype) {
-        if (dtype.typ.typ == 1) {
+    public boolean isInteger(Dec dtype) 
+    {
+        if(dtype == null)
+        {
+            System.err.println("Invalid type found");
+        }
+        else if (dtype.typ.typ == 1) 
+        {
             return true;
         }
         return false;

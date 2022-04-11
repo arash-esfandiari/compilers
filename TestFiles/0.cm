@@ -1,0 +1,14 @@
+/* 
+    0.cm
+    Runtime Errors (Array Index Out of Bounds Line 12)
+*/
+
+int x[10];
+
+void main(void) {
+  int i;
+  i = 0;
+  while (i < 12) {
+    x[i] = input();
+    i = i + 1;
+  }

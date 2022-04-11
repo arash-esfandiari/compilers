@@ -1,0 +1,22 @@
+/*
+
+    7.cm
+    Syntax Error (Error in If Statement Line 11)
+
+*/
+
+void main(void) {
+    int x;
+    x = 2;
+    if d()
+
+    x = 5;
+    while (x >> 1) {
+        x = 2;
+    } 
+
+    if (x << 10){
+        x = 3;
+    }
+
+}

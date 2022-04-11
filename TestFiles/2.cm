@@ -1,17 +1,20 @@
+/* 
+    2.cm
+    A program to compute the factorial value of an input
 
-
-
+    No Errors Present
+*/
 
 void main(void) {
-    int x;
-    x = 2
+  int x; int fac;
+  x = input();
+  fac = 1;
 
-    x == 2 == x;
-    while (x > 1) {
-        x = x - 1;
-    } 
+  while (x > 1) {
+    fac = fac * x;
+    x = x - 1;
+  } 
 
-    if (x < 10){
-        x = 3;
-    }
+  output(fac);
 }
+

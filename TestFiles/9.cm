@@ -1,0 +1,24 @@
+/*
+    9.cm
+    Semantic Error (Match Both Sides of an Assignment Line 10
+                    Function Returns Int when Void is Expected Line 17
+                    Re-Declaration of Variable Line 13
+                    Array Index Must be of Type Int Line 16)
+*/
+
+void main(void)
+{ 
+    int x;
+    x = foo(); 
+
+    int a[2]; int x;
+    a[x] = 1;
+    a[foo()] = 2;
+}
+
+void fun(void)
+{
+    int x;
+    x = 2;
+    return x;
+}
