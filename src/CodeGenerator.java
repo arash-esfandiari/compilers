@@ -108,6 +108,8 @@ public class CodeGenerator implements AbsynVisitor {
 
     public void visit(DecList decList) {
 
+        emitComment("C-Minus Compilation to TM Code");
+        emitComment("File: " + codeName + ".tm");
         /* Prelude */
         emitRM("LD", GP, 0, AC, "Load GP with max address"); // reg[gp] = 1023
         emitRM("LDA", FP, 0, GP, "Copy GP to FP"); // reg[fp] = 1023
