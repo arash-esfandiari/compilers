@@ -22,6 +22,12 @@ Flags:
 -s: creates the annoated tree and symbol table files.
 -c: create the  annoated tree, symbol table, and assembly code files.
 
+To run tm file on TMSimulator: 
+    cd TMSimulator 
+    make
+    ./tm tm_filename
+
+
 
 The testing file can be changed to any of those in the TestingFiles folder by replacing 1.cm with the desired file.
 
